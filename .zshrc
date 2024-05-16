@@ -30,6 +30,7 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zinit light athityakumar/colorls
 
 # Add in snippets
 zinit snippet OMZP::git
@@ -50,8 +51,8 @@ zinit cdreplay -q
 
 # Keybindings
 bindkey -e
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
+bindkey '^k' history-search-backward
+bindkey '^j' history-search-forward
 bindkey '^[w' kill-region
 
 # History
@@ -75,7 +76,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='ls --color'
+alias ls='colorls'
 alias vim='nvim'
 alias c='clear'
 
