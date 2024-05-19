@@ -33,6 +33,7 @@ return {
 				"lua_ls",
 				"pyright",
 				"clangd",
+				"neocmake",
 			},
 		})
 
@@ -46,6 +47,8 @@ return {
 				"eslint_d",
 				"clang-format",
 				"trivy",
+				"cmakelint", --CMakeLinter
+				"gersemi", --CMakeFormatter
 			},
 		})
 	end,
