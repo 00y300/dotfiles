@@ -5,7 +5,7 @@ return {
 		"nvim-telescope/telescope.nvim",
 		"mfussenegger/nvim-dap-python",
 	},
-	event = "VeryLazy", -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
+	ft = "python", -- Activate for Python files
 	keys = {
 		-- Keymap to open VenvSelector to pick a venv.
 		{ "<leader>vs", "<cmd>VenvSelect<cr>" },
