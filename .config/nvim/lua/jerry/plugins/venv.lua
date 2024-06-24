@@ -14,8 +14,18 @@ return {
 	},
 	config = function()
 		require("venv-selector").setup({
-			anaconda_base_path = "/Users/jerrynava/miniconda3/",
-			anaconda_envs_path = "/Users/jerrynava/miniconda3/envs/",
+			settings = {
+				search = {
+					anaconda_base = {
+						command = "FD '/python$' /opt/homebrew/Caskroom/miniconda/base/bin --full-path --color never -E /proc",
+						type = "Miniconda Base",
+					},
+					miniconda_envs = {
+						command = "fd 'bin/python$' /opt/homebrew/Caskroom/miniconda/base/ --full-path --color never | grep '/envs/'",
+						type = "Miniconda Envs",
+					},
+				},
+			},
 		})
 	end,
 }

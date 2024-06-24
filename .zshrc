@@ -101,3 +101,4 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+eval "$(/opt/homebrew/Caskroom/miniconda/base/bin/conda shell.zsh hook)"
