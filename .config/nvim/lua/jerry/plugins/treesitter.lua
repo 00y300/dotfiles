@@ -10,7 +10,8 @@ return {
 		local treesitter = require("nvim-treesitter.configs")
 
 		-- configure treesitter
-		treesitter.setup({ -- enable syntax highlighting
+		treesitter.setup({
+			-- enable syntax highlighting
 			highlight = {
 				enable = true,
 			},
@@ -40,6 +41,7 @@ return {
 				"query",
 				"vimdoc",
 				"c",
+				"python", -- Added python parser
 			},
 			incremental_selection = {
 				enable = true,

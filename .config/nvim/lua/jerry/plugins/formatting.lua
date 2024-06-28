@@ -15,9 +15,10 @@ return {
 				json = { "prettier" },
 				yaml = { "prettier" },
 				lua = { "stylua" },
-				python = { "isort", "black" },
+				python = { "black" }, -- Define the formatter for python
 				cpp = { "clang-format" },
 				cmake = { "gersemi" },
+				quarto = { "injected" }, -- Use injected formatter for Quarto files
 			},
 			format_on_save = {
 				lsp_fallback = true,
@@ -26,6 +27,20 @@ return {
 			},
 		})
 
+		-- Injected language formatting setup
+		conform.formatters.injected = {
+			options = {
+				ignore_errors = false,
+				lang_to_ext = {
+					python = "py",
+				},
+				lang_to_formatters = {
+					python = { "black" }, -- Define the formatter for python
+				},
+			},
+		}
+
+		-- Set keymap for formatting file or range in visual mode
 		vim.keymap.set({ "n", "v" }, "<leader>mp", function()
 			conform.format({
 				lsp_fallback = true,

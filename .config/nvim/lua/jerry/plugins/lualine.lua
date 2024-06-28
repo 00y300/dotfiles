@@ -5,8 +5,8 @@ return {
 		local is_mac = vim.fn.has("macunix") == 1
 
 		local virtual_env = function()
-			-- only show virtual env for Python
-			if vim.bo.filetype ~= "python" then
+			-- show virtual env for Python and Quarto
+			if vim.bo.filetype ~= "python" and vim.bo.filetype ~= "quarto" then
 				return ""
 			end
 
