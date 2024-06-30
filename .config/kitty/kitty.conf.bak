@@ -1,0 +1,19 @@
+# ~/.config/kitty/kitty.conf
+
+# Include the Catppuccin Mocha Theme
+include ~/.config/kitty/themes/Catppuccin-Mocha.conf
+
+# Font configuration
+font_family Hurmit Nerd Font Mono
+font_size 18.0
+
+# Tab Bar settings
+tab_bar_min_tabs 1
+tab_bar_edge bottom
+tab_bar_style powerline
+tab_powerline_style slanted
+tab_title_template {title}{' :{}:'.format(num_windows) if num_windows > 1 else ''}
+
+# Optional font stylistic settings
+# Uncomment and adjust based on your preferences
+# +cv02 +cv05 +cv09 +cv14 +ss04 +cv16 +cv31 +cv25 +cv26 +cv32 +cv28 +ss10 +zero +onum
