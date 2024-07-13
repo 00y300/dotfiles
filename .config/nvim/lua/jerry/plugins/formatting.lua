@@ -15,7 +15,7 @@ return {
 				json = { "prettier" },
 				yaml = { "prettier" },
 				lua = { "stylua" },
-				python = { "black" }, -- Define the formatter for python
+				python = { "isort", "black" }, -- Define the formatter for python
 				cpp = { "clang-format" },
 				cmake = { "gersemi" },
 				quarto = { "injected" }, -- Use injected formatter for Quarto files
@@ -35,7 +35,7 @@ return {
 					python = "py",
 				},
 				lang_to_formatters = {
-					python = { "black" }, -- Define the formatter for python
+					python = { "isort", "black" }, -- Define the formatter for python
 				},
 			},
 		}
