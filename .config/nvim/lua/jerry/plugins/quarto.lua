@@ -30,11 +30,24 @@ return {
 			},
 		},
 		dependencies = {
-			-- for language features in code cells
-			-- configured in lua/plugins/lsp.lua and
-			-- added as a nvim-cmp source in lua/plugins/completion.lua
 			"jmbuhr/otter.nvim",
 		},
+
+		vim.keymap.set(
+			"n",
+			"<leader>ipc",
+			"i```{python}<CR>```<esc>O",
+			{ desc = "Insert Python Code Chunk", silent = true }
+		),
+		vim.keymap.set("n", "<leader>rc", ":QuartoSend<CR>", { desc = "Quarto send cell", silent = true }),
+		vim.keymap.set(
+			"n",
+			"<leader>rA",
+			":QuartoSendAbove<CR>",
+			{ desc = "Quarto send cell and above", silent = true }
+		),
+		vim.keymap.set("n", "<leader>rB", ":QuartoBelow<CR>", { desc = "Quarto send below", silent = true }),
+		vim.keymap.set("n", "<leader>ra", ":QuartoSendAll<CR>", { desc = "Quarto send all cells", silent = true }),
 	},
 
 	{ -- directly open ipynb files as quarto documents

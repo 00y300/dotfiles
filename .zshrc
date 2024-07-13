@@ -103,4 +103,4 @@ unset __conda_setup
 # <<< conda initialize <<<
 eval "$(/opt/homebrew/Caskroom/miniconda/base/bin/conda shell.zsh hook)"
 export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-export PATH=$HOME/.local/bin:$PATH
+# export PATH=$HOME/.local/bin:$PATH
