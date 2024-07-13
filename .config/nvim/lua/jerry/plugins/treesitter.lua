@@ -41,7 +41,8 @@ return {
 				"query",
 				"vimdoc",
 				"c",
-				"python", -- Added python parser
+				"python",
+				"latex",
 			},
 			incremental_selection = {
 				enable = true,

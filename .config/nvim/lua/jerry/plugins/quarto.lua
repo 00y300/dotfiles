@@ -53,6 +53,8 @@ return {
 	{ -- directly open ipynb files as quarto documents
 		-- and convert back behind the scenes
 		"GCBallesteros/jupytext.nvim",
+
+		-- ft = { "ipynb" },
 		opts = {
 			custom_language_formatting = {
 				python = {
