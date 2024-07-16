@@ -16,7 +16,7 @@ return {
 		require("venv-selector").setup({
 			settings = {
 				search = {
-					anaconda_base = {
+					miniconda_base = {
 						command = "FD '/python$' /opt/homebrew/Caskroom/miniconda/base/bin --full-path --color never -E /proc",
 						type = "Miniconda Base",
 					},

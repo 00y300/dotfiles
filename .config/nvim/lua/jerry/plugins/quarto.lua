@@ -31,6 +31,10 @@ return {
 		},
 		dependencies = {
 			"jmbuhr/otter.nvim",
+			dependencies = {
+				"nvim-treesitter/nvim-treesitter",
+			},
+			-- "nvim-treesitter/nvim-treesitter",
 		},
 
 		vim.keymap.set(
@@ -48,12 +52,12 @@ return {
 		),
 		vim.keymap.set("n", "<leader>rB", ":QuartoBelow<CR>", { desc = "Quarto send below", silent = true }),
 		vim.keymap.set("n", "<leader>ra", ":QuartoSendAll<CR>", { desc = "Quarto send all cells", silent = true }),
+		vim.keymap.set("n", "<leader>rp", ":QuartoPreview<CR>", { desc = "Quarto Preview", silent = true }),
 	},
 
 	{ -- directly open ipynb files as quarto documents
 		-- and convert back behind the scenes
 		"GCBallesteros/jupytext.nvim",
-
 		-- ft = { "ipynb" },
 		opts = {
 			custom_language_formatting = {

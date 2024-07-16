@@ -36,10 +36,7 @@ zinit light sharkdp/bat
 # Add in snippets
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
-# zinit snippet OMZP::archlinux
 zinit snippet OMZP::aws
-# zinit snippet OMZP::kubectl
-# zinit snippet OMZP::kubectx
 zinit snippet OMZP::command-not-found
 
 # Load completions
@@ -52,8 +49,8 @@ zinit cdreplay -q
 
 # Keybindings
 bindkey -e
-bindkey '^k' history-search-backward
-bindkey '^j' history-search-forward
+bindkey '^u' history-search-backward
+bindkey '^d' history-search-forward
 bindkey '^[w' kill-region
 
 # History

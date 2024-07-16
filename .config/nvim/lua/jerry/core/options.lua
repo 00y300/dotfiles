@@ -6,10 +6,14 @@ opt.relativenumber = true
 opt.number = true
 
 -- tabs & indentation
-opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
-opt.shiftwidth = 2 -- 2 spaces for indent width
-opt.expandtab = true -- expand tab to spaces
-opt.autoindent = true -- copy indent from current line when starting new one
+-- opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
+-- opt.shiftwidth = 2 -- 2 spaces for indent width
+-- opt.expandtab = true -- expand tab to spaces
+-- opt.autoindent = true -- copy indent from current line when starting new one
+local tabsize = 2
+vim.opt.expandtab = true
+vim.opt.shiftwidth = tabsize
+vim.opt.tabstop = tabsize
 
 opt.wrap = false
 
@@ -37,3 +41,9 @@ opt.splitbelow = true -- split horizontal window to the bottom
 
 -- turn off swapfile
 opt.swapfile = false
+
+-- Navigate vim panes better
+vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
+vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
+vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
+vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")

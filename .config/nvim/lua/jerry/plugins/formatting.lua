@@ -18,7 +18,7 @@ return {
 				python = { "isort", "black" }, -- Define the formatter for python
 				cpp = { "clang-format" },
 				cmake = { "gersemi" },
-				quarto = { "injected" }, -- Use injected formatter for Quarto files
+				-- quarto = { "injected" }, -- Use injected formatter for Quarto files
 			},
 			format_on_save = {
 				lsp_fallback = true,
@@ -35,7 +35,7 @@ return {
 					python = "py",
 				},
 				lang_to_formatters = {
-					python = { "isort", "black" }, -- Define the formatter for python
+					-- python = { "isort", "black" }, -- Define the formatter for python
 				},
 			},
 		}
