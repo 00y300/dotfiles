@@ -5,6 +5,11 @@ return {
 		local conform = require("conform")
 
 		conform.setup({
+			notify_on_error = false,
+			format_on_save = {
+				timeout_ms = 500,
+				lsp_fallback = true,
+			},
 			formatters_by_ft = {
 				javascript = { "prettier" },
 				typescript = { "prettier" },
@@ -14,28 +19,41 @@ return {
 				html = { "prettier" },
 				json = { "prettier" },
 				yaml = { "prettier" },
-				lua = { "stylua" },
-				python = { "isort", "black" }, -- Define the formatter for python
+				lua = { "mystylua" },
+				python = { "isort", "black" },
 				cpp = { "clang-format" },
 				cmake = { "gersemi" },
-				-- quarto = { "injected" }, -- Use injected formatter for Quarto files
+				quarto = { "injected" },
 			},
-			format_on_save = {
-				lsp_fallback = true,
-				async = false,
-				timeout_ms = 1000,
+			formatters = {
+				mystylua = {
+					command = "stylua",
+					args = { "--indent-type", "Spaces", "--indent-width", "2", "-" },
+				},
 			},
 		})
 
-		-- Injected language formatting setup
+		-- Customize the "injected" formatter
 		conform.formatters.injected = {
 			options = {
 				ignore_errors = false,
 				lang_to_ext = {
+					bash = "sh",
+					c_sharp = "cs",
+					elixir = "exs",
+					javascript = "js",
+					julia = "jl",
+					latex = "tex",
+					markdown = "md",
 					python = "py",
+					ruby = "rb",
+					rust = "rs",
+					teal = "tl",
+					r = "r",
+					typescript = "ts",
 				},
 				lang_to_formatters = {
-					-- python = { "isort", "black" }, -- Define the formatter for python
+					python = { "isort", "black" },
 				},
 			},
 		}

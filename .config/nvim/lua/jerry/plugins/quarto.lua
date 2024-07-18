@@ -39,6 +39,12 @@ return {
 
 		vim.keymap.set(
 			"n",
+			"<leader>oa",
+			":lua require'otter'.activate()<CR>",
+			{ desc = "Activate Otter", silent = true }
+		),
+		vim.keymap.set(
+			"n",
 			"<leader>ipc",
 			"i```{python}<CR>```<esc>O",
 			{ desc = "Insert Python Code Chunk", silent = true }
