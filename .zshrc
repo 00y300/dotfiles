@@ -1,3 +1,7 @@
+# Set Java Home
+. ~/.asdf/plugins/java/set-java-home.zsh
+
+# Set XDG Config Home
 export XDG_CONFIG_HOME="$HOME/.config"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -7,9 +11,28 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+# macOS specific setup
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Homebrew initialization
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+
+    # Miniconda initialization
+    __conda_setup="$('/Users/jerrynava/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh" ]; then
+            . "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh"
+        else
+            export PATH="/Users/jerrynava/miniconda3/bin:$PATH"
+        fi
+    fi
+    unset __conda_setup
+
+    # Additional macOS environment setups
+    export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
 fi
 
 # Set the directory we want to store zinit and plugins
@@ -40,6 +63,7 @@ zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::aws
 zinit snippet OMZP::command-not-found
+zinit snippet OMZP::asdf
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -86,20 +110,3 @@ alias c='clear'
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/jerrynava/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/jerrynava/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-eval "$(/opt/homebrew/Caskroom/miniconda/base/bin/conda shell.zsh hook)"
-export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-# export PATH=$HOME/.local/bin:$PATH
