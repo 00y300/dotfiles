@@ -1,5 +1,5 @@
 # Set Java Home
-. ~/.asdf/plugins/java/set-java-home.zsh
+# . ~/.asdf/plugins/java/set-java-home.zsh
 
 # Set XDG Config Home
 export XDG_CONFIG_HOME="$HOME/.config"

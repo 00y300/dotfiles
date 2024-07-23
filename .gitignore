@@ -1,2 +1,6 @@
 .DS_Store
 .virtualenvs/neovim
+.config/nvim/lazy-lock.json
+node_modules
+package-lock.json
+package.json
