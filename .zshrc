@@ -1,6 +1,3 @@
-# Set Java Home
-# . ~/.asdf/plugins/java/set-java-home.zsh
-
 # Set XDG Config Home
 export XDG_CONFIG_HOME="$HOME/.config"
 
@@ -33,6 +30,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
+fi
+
+# Arch Linux specific setup
+if [[ "$OSTYPE" == "linux-gnu" ]] && [[ -f "/etc/arch-release" ]]; then
+    # export PATH=/opt/cuda/bin:$PATH
+    export PATH=/usr/local/cuda-11.8/bin:$PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+
+
 fi
 
 # Set the directory we want to store zinit and plugins
@@ -110,3 +116,5 @@ alias c='clear'
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
+
+
