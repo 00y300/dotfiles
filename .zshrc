@@ -12,7 +12,8 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # Homebrew initialization
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+        eval "$(/opt/homebrew/bin/disable_splash_rendering = true
+disable_hyprland_logo = truebrew shellenv)"
     fi
 
     # Miniconda initialization
@@ -117,4 +118,9 @@ alias c='clear'
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
-
+# Check if nvim is installed and set it as the default editor, otherwise use vim
+if command -v nvim &> /dev/null; then
+    export EDITOR="nvim"
+else
+    export EDITOR="vim"
+fi
