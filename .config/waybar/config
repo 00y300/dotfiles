@@ -2,26 +2,26 @@
   "position": "top",
   "modules-left": ["hyprland/workspaces", "wlr/taskbar"],
   "modules-center": ["custom/music"],
-  "modules-right": ["network", "pulseaudio", "battery", "clock"],
+  "modules-right": ["network", "pulseaudio", "battery", "clock", "custom/exit"],
 
   "wlr/taskbar": {
-        "format": "{icon}",
-        "icon-size": 20,
-        "icon-theme": "Star",
-        "tooltip-format": "{title}",
-        "on-click": "activate",
-        "on-click-middle": "close",
-        "on-click-right": "minimize"
-    },
+    "format": "{icon}",
+    "icon-size": 20,
+    "icon-theme": "Star",
+    "tooltip-format": "{title}",
+    "on-click": "activate",
+    "on-click-middle": "close",
+    "on-click-right": "minimize"
+  },
   "custom/music": {
-        "format": "  {}",
-        "escape": true,
-        "interval": 5,
-        "tooltip": false,
-        "exec": "playerctl metadata --format='{{ title }}'",
-        "on-click": "playerctl play-pause",
-        "max-length": 50
-    },
+    "format": "  {}",
+    "escape": true,
+    "interval": 5,
+    "tooltip": false,
+    "exec": "playerctl metadata --format='{{ title }}'",
+    "on-click": "playerctl play-pause",
+    "max-length": 50
+  },
   "clock": {
     "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %I:%M %p}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
@@ -46,7 +46,7 @@
     "format-ethernet": "<span size='13000' foreground='#f5e0dc'>󰤭  </span> Disconnected",
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "<span size='13000' foreground='#f5e0dc'>  </span>Disconnected",
-    "tooltip-format-wifi": "Signal Strenght: {signalStrength}%"
+    "tooltip-format-wifi": "Signal Strength: {signalStrength}%"
   },
   "pulseaudio": {
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
@@ -61,5 +61,11 @@
       "car": "",
       "default": ["", ""]
     }
+  },
+  "custom/exit": {
+    "format": "󰐦",
+    "on-click": "wlogout",
+    "tooltip-format": "Power Menu"
   }
 }
+

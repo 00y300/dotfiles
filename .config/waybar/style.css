@@ -18,8 +18,8 @@ window#waybar {
 
 #window {
   margin: 0;
-  padding-left: 8;
-  padding-right: 8;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 button {
@@ -49,6 +49,7 @@ button:hover {
   color: @mauve;
   border-top: 2px solid @mauve;
 }
+
 #taskbar button.active {
   background-color: rgba(0, 0, 0, 0.3);
   color: @red;
@@ -58,6 +59,7 @@ button:hover {
 #workspaces button.urgent {
   background-color: #eb4d4b;
 }
+
 #custom-music,
 #pulseaudio,
 #clock,
@@ -69,6 +71,7 @@ button:hover {
 #backlight,
 #wireplumber,
 #tray,
+#custom-exit,
 #network,
 #mode,
 #scratchpad {
@@ -130,8 +133,15 @@ button:hover {
   padding-left: 6px;
   padding-right: 6px;
 }
+
 #custom-music {
   color: @teal;
   border-radius: 1rem;
   border-bottom: 2px solid @teal;
+}
+
+#custom-exit {
+  color: @sapphire;
+  font-size: 19px;
+  border-bottom: 2px solid @sapphire;
 }
