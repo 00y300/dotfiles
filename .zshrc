@@ -14,8 +14,38 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
+
+    # Miniconda initialization
+    __conda_setup="$('/Users/jerrynava/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh" ]; then
+            . "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh"
+        else
+            export PATH="/Users/jerrynava/miniconda3/bin:$PATH"
+        fi
+    fi
+    unset __conda_setup
+
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
+fi
+
+# Arch Linux specific setup
+if grep -q "ID=arch" /etc/os-release; then
+    # Miniconda initialization
+    __conda_setup="$(/opt/miniconda3/bin/conda 'shell.zsh' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+            . "/opt/miniconda3/etc/profile.d/conda.sh"
+        else
+            export PATH="/opt/miniconda3/bin:$PATH"
+        fi
+    fi
+    unset __conda_setup
 fi
 
 # Set the directory we want to store zinit and plugins
@@ -53,7 +83,7 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# To customize prompt, run p10k configure or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Keybindings
@@ -94,3 +124,4 @@ alias c='clear'
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
+export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
