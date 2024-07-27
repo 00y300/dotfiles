@@ -12,8 +12,7 @@ fi
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # Homebrew initialization
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
-        eval "$(/opt/homebrew/bin/disable_splash_rendering = true
-disable_hyprland_logo = truebrew shellenv)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
 
     # Miniconda initialization
@@ -31,15 +30,6 @@ disable_hyprland_logo = truebrew shellenv)"
 
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-fi
-
-# Arch Linux specific setup
-if [[ "$OSTYPE" == "linux-gnu" ]] && [[ -f "/etc/arch-release" ]]; then
-    # export PATH=/opt/cuda/bin:$PATH
-    export PATH=/usr/local/cuda-11.8/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
-
-
 fi
 
 # Set the directory we want to store zinit and plugins
@@ -118,9 +108,3 @@ alias c='clear'
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
-# Check if nvim is installed and set it as the default editor, otherwise use vim
-if command -v nvim &> /dev/null; then
-    export EDITOR="nvim"
-else
-    export EDITOR="vim"
-fi
