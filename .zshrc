@@ -124,4 +124,7 @@ alias c='clear'
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
+# Add Quarto to PATH
+export PATH=$PATH:~/.local/bin
+
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1

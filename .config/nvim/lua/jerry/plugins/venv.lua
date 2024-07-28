@@ -31,7 +31,7 @@ return {
             type = "Miniconda Base (Arch)",
           },
           miniconda_envs_arch = {
-            command = "fd 'bin/python$' /opt/miniconda3/ --full-path --color never | grep '/envs/'",
+            command = "fd 'bin/python$' /home/jerry/.conda/envs/ --full-path --color never | grep '/envs/'",
             type = "Miniconda Envs (Arch)",
           },
         },
