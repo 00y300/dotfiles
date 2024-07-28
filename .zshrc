@@ -8,8 +8,8 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# macOS specific setup
 if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS specific setup
     # Homebrew initialization
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -30,10 +30,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-fi
-
-# Arch Linux specific setup
-if grep -q "ID=arch" /etc/os-release; then
+elif grep -q "ID=arch" /etc/os-release; then
+    # Arch Linux specific setup
     # Miniconda initialization
     __conda_setup="$(/opt/miniconda3/bin/conda 'shell.zsh' 'hook' 2> /dev/null)"
     if [ $? -eq 0 ]; then
@@ -46,6 +44,8 @@ if grep -q "ID=arch" /etc/os-release; then
         fi
     fi
     unset __conda_setup
+else
+    echo "Unsupported OS"
 fi
 
 # Set the directory we want to store zinit and plugins
