@@ -2,7 +2,7 @@
   "position": "top",
   "modules-left": ["hyprland/workspaces", "wlr/taskbar"],
   "modules-center": ["custom/music"],
-  "modules-right": ["network", "pulseaudio", "battery", "clock", "custom/exit"],
+  "modules-right": ["custom/brightness", "network", "pulseaudio", "battery", "clock", "custom/exit"],
 
   "wlr/taskbar": {
     "format": "{icon}",
@@ -66,6 +66,16 @@
     "format": "󰐦",
     "on-click": "wlogout",
     "tooltip-format": "Power Menu"
-  }
+  },
+"custom/brightness": {
+    "exec": "ddcutil -b 3 getvcp 10 -t | perl -nE 'if (/ C (\\d+) /) { say $1; }'",
+    "exec-if": "sleep 1",
+    "format": "{}% {icon}",
+    "format-icons": [""],
+    "interval": 5,
+    "on-scroll-up": "ddcutil -b 3 setvcp 10 + 10 && ddcutil -b 5 setvcp 10 + 10",
+    "on-scroll-down": "ddcutil -b 3 setvcp 10 - 10 && ddcutil -b 5 setvcp 10 - 10"
+}
+
 }
 
