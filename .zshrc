@@ -136,3 +136,14 @@ eval "$(zoxide init --cmd cd zsh)"
 export PATH=$PATH:~/.local/bin
 
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
+
+# Check for Neovim, Vim, and Vi in order and set EDITOR accordingly
+if command -v nvim >/dev/null 2>&1; then
+  export EDITOR="nvim"
+elif command -v vim >/dev/null 2>&1; then
+  export EDITOR="vim"
+elif command -v vi >/dev/null 2>&1; then
+  export EDITOR="vi"
+else
+  echo "No suitable editor found. Please install nvim, vim, or vi."
+fi
