@@ -44,6 +44,14 @@ elif grep -q "ID=arch" /etc/os-release; then
         fi
     fi
     unset __conda_setup
+    export PATH=/opt/cuda/bin:$PATH
+    export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+
+
+    # IF CUDA NEED TO ROLL BACK CUDA
+    # export PATH=/usr/local/cuda-11.8/bin:$PATH
+    # export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+
 else
     echo "Unsupported OS"
 fi

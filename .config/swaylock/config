@@ -1,7 +1,9 @@
 clock
 indicator
+indicator-idle-visible
 timestr=%I:%M %p
-
+effect-blur=5x5 
+grace=5
 
 #Mocha Catpuccin Swaylock Theme
 color=1e1e2e
