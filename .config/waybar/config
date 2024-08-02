@@ -14,7 +14,8 @@
     "on-click-right": "minimize"
   },
   "custom/music": {
-    "format": "  {}",
+    "format": "󰠃 󰫔 {}",
+    "icon-size": 50,
     "escape": true,
     "interval": 5,
     "tooltip": false,
@@ -23,7 +24,7 @@
     "max-length": 50
   },
   "clock": {
-    "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %I:%M %p}",
+    "format": "<span foreground='#f5c2e7'>󰔠  </span>{:%a %d %I:%M %p}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "battery": {
@@ -51,15 +52,15 @@
   "pulseaudio": {
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "format": "<span size='13000' foreground='#89b4fa'>{icon} </span> {volume}%",
-    "format-muted": "<span size='14000' foreground='#89b4fa'></span> Muted",
+    "format-muted": "<span size='14000' foreground='#89b4fa'></span> Muted",
     "format-icons": {
-      "headphone": "",
+      "headphone": "",
       "hands-free": "",
       "headset": "",
       "phone": "",
       "portable": "",
       "car": "",
-      "default": ["", ""]
+      "default": ["󰖀", "󰕾"]
     }
   },
   "custom/exit": {
