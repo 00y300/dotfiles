@@ -147,3 +147,6 @@ elif command -v vi >/dev/null 2>&1; then
 else
   echo "No suitable editor found. Please install nvim, vim, or vi."
 fi
+
+#ADSF JAVAHome
+source ~/.asdf/plugins/java/set-java-home.zsh
