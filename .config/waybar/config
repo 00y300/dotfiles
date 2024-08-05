@@ -14,7 +14,7 @@
     "on-click-right": "minimize"
   },
   "custom/music": {
-    "format": "󰠃 󰫔 {}",
+    "format": "󰫔 {}",
     "icon-size": 50,
     "escape": true,
     "interval": 5,
@@ -51,10 +51,10 @@
   },
   "pulseaudio": {
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-    "format": "<span size='13000' foreground='#89b4fa'>{icon} </span> {volume}%",
+    "format": "<span size='13000' foreground='#89b4fa'>{icon}</span> {volume}%",
     "format-muted": "<span size='14000' foreground='#89b4fa'></span> Muted",
     "format-icons": {
-      "headphone": "",
+      "headphone": " ",
       "hands-free": "",
       "headset": "",
       "phone": "",

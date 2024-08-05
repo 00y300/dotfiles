@@ -46,7 +46,7 @@ return {
     ),
     vim.keymap.set("n", "<leader>rc", ":QuartoSend<CR>", { desc = "Quarto send cell", silent = true }),
     vim.keymap.set("n", "<leader>rA", ":QuartoSendAbove<CR>", { desc = "Quarto send cell and above", silent = true }),
-    vim.keymap.set("n", "<leader>rB", ":QuartoBelow<CR>", { desc = "Quarto send below", silent = true }),
+    vim.keymap.set("n", "<leader>rB", ":QuartoSendBelow<CR>", { desc = "Quarto send below", silent = true }),
     vim.keymap.set("n", "<leader>ra", ":QuartoSendAll<CR>", { desc = "Quarto send all cells", silent = true }),
     vim.keymap.set("n", "<leader>rp", ":QuartoPreview<CR>", { desc = "Quarto Preview", silent = true }),
   },
