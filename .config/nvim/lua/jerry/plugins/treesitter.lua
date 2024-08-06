@@ -43,7 +43,7 @@ return {
         "c",
         "python",
         "latex",
-        "csv",
+        -- "csv",
         "java",
       },
       incremental_selection = {
