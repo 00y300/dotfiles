@@ -30,6 +30,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
+    #ADSF JAVA HOME
+    source ~/.asdf/plugins/java/set-java-home.zsh
+
+
 elif grep -q "ID=arch" /etc/os-release; then
     # Arch Linux specific setup
     # Miniconda initialization
@@ -44,13 +48,13 @@ elif grep -q "ID=arch" /etc/os-release; then
         fi
     fi
     unset __conda_setup
-    export PATH=/opt/cuda/bin:$PATH
-    export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+    # export PATH=/opt/cuda/bin:$PATH
+    # export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
 
 
     # IF CUDA NEED TO ROLL BACK CUDA
-    # export PATH=/usr/local/cuda-11.8/bin:$PATH
-    # export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+    export PATH=/usr/local/cuda-12.4//bin:$PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
 
 else
     echo "Unsupported OS"
@@ -148,5 +152,3 @@ else
   echo "No suitable editor found. Please install nvim, vim, or vi."
 fi
 
-#ADSF JAVAHome
-source ~/.asdf/plugins/java/set-java-home.zsh

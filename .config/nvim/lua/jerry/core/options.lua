@@ -42,7 +42,10 @@ opt.splitbelow = true -- split horizontal window to the bottom
 -- turn off swapfile
 opt.swapfile = false
 
--- Navigate vim panes better
+-- Make the default terminal emulator for kitty
+vim.g.terminal_emulator = "kitty"
+vim.cmd('let $TERMINFO="/usr/share/terminfo"')
+
 vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
 vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
 vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
