@@ -2,7 +2,7 @@ return {
   {
     "akinsho/toggleterm.nvim",
     keys = {
-      { "<leader>t",  "<cmd>ToggleTerm<CR>",              desc = "Toggle the terminal" },
+      { "<leader>t", "<cmd>ToggleTerm<CR>", desc = "Toggle the terminal" },
       { "<leader>tx", ":lua send_exit_to_terminal()<CR>", desc = "Send exit to the terminal" },
     },
     config = function()
@@ -46,6 +46,20 @@ return {
   },
   {
     "numToStr/FTerm.nvim",
+    keys = {
+      {
+        "<A-i>",
+        '<CMD>lua require("FTerm").toggle()<CR>',
+        desc = "Toggle ON/OFF Floating Terminal",
+        mode = { "n", "t" },
+      },
+      {
+        "<A-x>",
+        '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>',
+        desc = "Kill Floating Terminal",
+        mode = "t",
+      },
+    },
     config = function()
       local fterm = require("FTerm")
       fterm.setup({
@@ -55,24 +69,15 @@ return {
           width = 0.45,
         },
       })
-      vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>', { desc = 'Toggle ON/OFF Floating Terminal' })
-      vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>',
-        { desc = 'Toggle ON/OFF Floating Terminal' })
-      vim.keymap.set('t', '<A-x>', '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>', { desc = 'Kill Floating Terminal' })
     end,
   },
   {
     "mikavilpas/yazi.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
     keys = {
       {
-        "<leader>-",
-        -- 👇 in this section, choose your own keymappings!
-        desc = "Open yazi at the current file",
-      },
-      {
         -- Open in the current working directory
-        "<leader>cw",
+        "<leader>ty",
         "<cmd>Yazi cwd<cr>",
         desc = "Open the file manager in nvim's working directory",
       },
