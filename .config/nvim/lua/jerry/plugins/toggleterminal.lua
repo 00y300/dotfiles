@@ -2,7 +2,7 @@ return {
   {
     "akinsho/toggleterm.nvim",
     keys = {
-      { "<leader>t", "<cmd>ToggleTerm<CR>", desc = "Toggle the terminal" },
+      { "<leader>t",  "<cmd>ToggleTerm<CR>",              desc = "Toggle the terminal" },
       { "<leader>tx", ":lua send_exit_to_terminal()<CR>", desc = "Send exit to the terminal" },
     },
     config = function()
@@ -55,7 +55,10 @@ return {
           width = 0.45,
         },
       })
-      vim.keymap.set("n", "<leader>tf", '<CMD>lua require("FTerm").toggle()<CR>')
+      vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>', { desc = 'Toggle ON/OFF Floating Terminal' })
+      vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>',
+        { desc = 'Toggle ON/OFF Floating Terminal' })
+      vim.keymap.set('t', '<A-x>', '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>', { desc = 'Kill Floating Terminal' })
     end,
   },
   {
