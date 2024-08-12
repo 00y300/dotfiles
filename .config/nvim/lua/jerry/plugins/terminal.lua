@@ -45,48 +45,14 @@ return {
     end,
   },
   {
-    "numToStr/FTerm.nvim",
-    keys = {
-      {
-        "<A-i>",
-        '<CMD>lua require("FTerm").toggle()<CR>',
-        desc = "Toggle ON/OFF Floating Terminal",
-        mode = { "n", "t" },
-      },
-      {
-        "<A-x>",
-        '<C-\\><C-n><CMD>lua require("FTerm").exit()<CR>',
-        desc = "Kill Floating Terminal",
-        mode = "t",
-      },
-    },
-    config = function()
-      local fterm = require("FTerm")
-      fterm.setup({
-        border = "double",
-        dimensions = {
-          height = 0.45,
-          width = 0.45,
-        },
-      })
-    end,
-  },
-  {
     "mikavilpas/yazi.nvim",
-    -- event = "VeryLazy",
+    event = "VeryLazy",
     keys = {
       {
         -- Open in the current working directory
         "<leader>ty",
         "<cmd>Yazi cwd<cr>",
         desc = "Open the file manager in nvim's working directory",
-      },
-      {
-        -- NOTE: this requires a version of yazi that includes
-        -- https://github.com/sxyazi/yazi/pull/1305 from 2024-07-18
-        "<c-up>",
-        "<cmd>Yazi toggle<cr>",
-        desc = "Resume the last yazi session",
       },
     },
   },
