@@ -56,6 +56,7 @@ elif grep -q "ID=arch" /etc/os-release; then
     export PATH=/usr/local/cuda-12.4//bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
 
+    export GTK_THEME=Adwaita:dark
 else
     echo "Unsupported OS"
 fi
