@@ -7,6 +7,9 @@ return {
     -- Required.
     "nvim-lua/plenary.nvim",
   },
+
+  --KeyMaps
+  vim.keymap.set("n", "<leader>ofl", "<cmd>ObsidianFollowLink<CR>", { desc = "Obsidian Follow Link" }),
   opts = {
     workspaces = {
       {
