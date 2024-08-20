@@ -46,7 +46,7 @@ return {
   },
   {
     "mikavilpas/yazi.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
     keys = {
       {
         -- Open in the current working directory
