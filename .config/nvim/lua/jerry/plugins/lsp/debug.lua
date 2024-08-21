@@ -7,7 +7,14 @@ return {
       "nvim-neotest/nvim-nio",
     },
     config = function()
+      vim.fn.sign_define("DapStopped", { text = "", texthl = "DiagnosticWarn", linehl = "DapStoppedLine" })
+      vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticInfo" })
+      vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "DiagnosticError" })
+      vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "DiagnosticInfo" })
+      vim.fn.sign_define("DapLogPoint", { text = ".>", texthl = "DiagnosticInfo" })
+
       require("dapui").setup() -- Moved dapui.setup outside of the listeners
+
       require("dap").listeners.before["attach"]["dapui_config"] = function()
         require("dapui").open()
       end
@@ -20,6 +27,7 @@ return {
       require("dap").listeners.before["event_exited"]["dapui_config"] = function()
         require("dapui").close()
       end
+
       -- Key mappings
       vim.api.nvim_set_keymap(
         "n",

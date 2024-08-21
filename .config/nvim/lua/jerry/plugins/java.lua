@@ -19,13 +19,15 @@ return {
         enable = true,
       },
       java_debug_adapter = {
-        enable = true,
+        -- enable = true,
+        enable = false,
       },
       spring_boot_tools = {
         enable = true,
       },
       jdk = {
-        auto_install = true,
+        -- auto_install = true,
+        auto_install = false,
       },
       notifications = {
         dap = false,
