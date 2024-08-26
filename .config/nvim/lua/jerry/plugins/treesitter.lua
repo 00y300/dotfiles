@@ -44,8 +44,8 @@ return {
         "c",
         "python",
         "latex",
-        -- "csv",
         "java",
+        "sql",
       },
       incremental_selection = {
         enable = true,
