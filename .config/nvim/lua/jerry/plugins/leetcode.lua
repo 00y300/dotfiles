@@ -14,6 +14,6 @@ return {
   opts = {
     -- configuration goes here
     lang = "python3",
-    logging = true,
+    -- logging = true,
   },
 }
