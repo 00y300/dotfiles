@@ -4,6 +4,15 @@ vim.g.mapleader = " "
 -- Create a local variable for keymap for conciseness
 local keymap = vim.keymap
 
+-- Disable arrow keys in all modes
+local modes = { "n", "i", "v" }
+for _, mode in ipairs(modes) do
+  keymap.set(mode, "<Up>", "<Nop>", { desc = "Disable Up arrow in all modes" })
+  keymap.set(mode, "<Left>", "<Nop>", { desc = "Disable Left arrow in all modes" })
+  keymap.set(mode, "<Right>", "<Nop>", { desc = "Disable Right arrow in all modes" })
+  keymap.set(mode, "<Down>", "<Nop>", { desc = "Disable Down arrow in all modes" })
+end
+
 -- Insert mode mappings
 keymap.set("i", "<C-h>", "<Left>", { desc = "Move left in insert mode" })
 keymap.set("i", "<C-j>", "<Down>", { desc = "Move down in insert mode" })

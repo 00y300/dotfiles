@@ -20,7 +20,6 @@ return {
       require("mason-lspconfig").setup({
         -- list of servers for mason to install
         ensure_installed = {
-          -- "tsserver",
           "ts_ls",
           "html",
           "cssls",
@@ -28,6 +27,7 @@ return {
           "pyright",
           "clangd",
           "neocmake",
+          "sqls",
         },
       })
 
@@ -44,6 +44,7 @@ return {
           "trivy",
           "cmakelint", -- CMakeLinter
           "gersemi", -- CMakeFormatter
+          "sqlfmt", -- SQL formater
         },
       })
     end,

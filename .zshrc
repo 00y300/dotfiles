@@ -1,104 +1,79 @@
 # Set XDG Config Home
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
+# OS-specific setups
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS specific setup
-    # Homebrew initialization
+    # macOS: Homebrew initialization
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
 
-    # Miniconda initialization
-    __conda_setup="$('/Users/jerrynava/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+    # Miniconda initialization (using correct path)
+    __conda_setup="$('/opt/homebrew/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
     if [ $? -eq 0 ]; then
         eval "$__conda_setup"
+    elif [ -f "/opt/homebrew/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/etc/profile.d/conda.sh"
     else
-        if [ -f "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh" ]; then
-            . "/Users/jerrynava/miniconda3/etc/profile.d/conda.sh"
-        else
-            export PATH="/Users/jerrynava/miniconda3/bin:$PATH"
-        fi
+        export PATH="/opt/homebrew/bin:$PATH"
     fi
     unset __conda_setup
 
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-    #ADSF JAVA HOME
+    # ADSF Java Home setup
     source ~/.asdf/plugins/java/set-java-home.zsh
-
 
 elif grep -q "ID=arch" /etc/os-release; then
     # Arch Linux specific setup
-    # Miniconda initialization
     __conda_setup="$(/opt/miniconda3/bin/conda 'shell.zsh' 'hook' 2> /dev/null)"
     if [ $? -eq 0 ]; then
         eval "$__conda_setup"
-    else
-        if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-            . "/opt/miniconda3/etc/profile.d/conda.sh"
-        else
-            export PATH="/opt/miniconda3/bin:$PATH"
-        fi
+    elif [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+        export PATH="/opt/miniconda3/bin:$PATH"
     fi
     unset __conda_setup
-    # export PATH=/opt/cuda/bin:$PATH
-    # export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
 
-
-    # IF CUDA NEED TO ROLL BACK CUDA
-    export PATH=/usr/local/cuda-12.4//bin:$PATH
+    # Arch Linux environment setups (CUDA, GTK, Wayland, etc.)
+    export PATH=/usr/local/cuda-12.4/bin:$PATH
     export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
-
     export GTK_THEME=Adwaita:dark
     export ELECTRON_OZONE_PLATFORM_HINT=wayland
 else
     echo "Unsupported OS"
 fi
 
-# Set the directory we want to store zinit and plugins
+# Zinit plugin manager setup
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-
-# Download Zinit, if it's not there yet
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
-
-# Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Add in Powerlevel10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
+# Load Starship prompt and set the custom config path
+eval "$(starship init zsh)"
 
-# Add in zsh plugins
+# Specify the path to your Starship configuration file
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
-zinit light athityakumar/colorls
 zinit light sharkdp/bat
 
-# Add in snippets
+# Snippets via Zinit
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
-zinit snippet OMZP::aws
 zinit snippet OMZP::command-not-found
 zinit snippet OMZP::asdf
 
 # Load completions
 autoload -Uz compinit && compinit
 
+# Zinit command replay
 zinit cdreplay -q
-
-# To customize prompt, run p10k configure or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Keybindings
 bindkey -e
@@ -106,32 +81,25 @@ bindkey '^u' history-search-backward
 bindkey '^d' history-search-forward
 bindkey '^[w' kill-region
 
-# History
+# History settings
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
+setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_find_no_dups
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 
-# Use bat for file preview in fzf-tab
+# FZF-Tab configuration
 zstyle ':fzf-tab:complete:*' fzf-preview 'bat --style=numbers --color=always --line-range=:500 $realpath'
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
 alias ls='colorls'
-# alias vim='nvim'
 alias c='clear'
 
 # Shell integrations
@@ -141,9 +109,10 @@ eval "$(zoxide init --cmd cd zsh)"
 # Add Quarto to PATH
 export PATH=$PATH:~/.local/bin
 
+# Disable OpenSSL legacy mode for cryptography
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 
-# Check for Neovim, Vim, and Vi in order and set EDITOR accordingly
+# Editor setup: Prefer Neovim, fallback to Vim or Vi
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR="nvim"
 elif command -v vim >/dev/null 2>&1; then
@@ -153,4 +122,3 @@ elif command -v vi >/dev/null 2>&1; then
 else
   echo "No suitable editor found. Please install nvim, vim, or vi."
 fi
-

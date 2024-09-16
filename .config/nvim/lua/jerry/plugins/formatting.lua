@@ -25,6 +25,7 @@ return {
         cmake = { "gersemi" },
         quarto = { "injected" },
         java = { "clang-format" },
+        sql = { "sqlfmt" },
       },
       formatters = {
         mystylua = {
