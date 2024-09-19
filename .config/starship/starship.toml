@@ -20,6 +20,7 @@ add_newline = false
 format = "[$symbol($version )]($style)"
 
 [conda]
+ignore_base = false
 symbol = "󱔎 "
 format = "[$symbol$environment]($style)"
 

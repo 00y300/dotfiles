@@ -21,7 +21,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # Additional macOS environment setups
     export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-    # ADSF Java Home setup
     source ~/.asdf/plugins/java/set-java-home.zsh
 
 elif grep -q "ID=arch" /etc/os-release; then
@@ -35,13 +34,16 @@ elif grep -q "ID=arch" /etc/os-release; then
     unset __conda_setup
 
     # Arch Linux environment setups (CUDA, GTK, Wayland, etc.)
-    export PATH=/usr/local/cuda-12.4/bin:$PATH
-    export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
-    export GTK_THEME=Adwaita:dark
-    export ELECTRON_OZONE_PLATFORM_HINT=wayland
+    export PATH="/usr/local/cuda-12.4/bin:$PATH"
+    export LD_LIBRARY_PATH="/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH"
+    export GTK_THEME="Adwaita:dark"
+    export ELECTRON_OZONE_PLATFORM_HINT="wayland"
 else
     echo "Unsupported OS"
 fi
+
+# Consolidated PATH updates
+export PATH="$HOME/.asdf/installs/ruby/3.3.5/bin:$HOME/.local/bin:$PATH"
 
 # Zinit plugin manager setup
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -53,15 +55,15 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # Load Starship prompt and set the custom config path
 eval "$(starship init zsh)"
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
 
-# Specify the path to your Starship configuration file
-export STARSHIP_CONFIG=~/.config/starship/starship.toml
-
+# Zinit plugins
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit light sharkdp/bat
+zinit light jeffreytse/zsh-vi-mode
 
 # Snippets via Zinit
 zinit snippet OMZP::git
@@ -77,8 +79,8 @@ zinit cdreplay -q
 
 # Keybindings
 bindkey -e
-bindkey '^u' history-search-backward
-bindkey '^d' history-search-forward
+# bindkey '^u' history-search-backward
+# bindkey '^d' history-search-forward
 bindkey '^[w' kill-region
 
 # History settings
@@ -105,9 +107,6 @@ alias c='clear'
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
-
-# Add Quarto to PATH
-export PATH=$PATH:~/.local/bin
 
 # Disable OpenSSL legacy mode for cryptography
 export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
