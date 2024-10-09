@@ -101,7 +101,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='colorls'
+# alias ls='colorls'
 alias c='clear'
 
 # Shell integrations
@@ -121,3 +121,4 @@ elif command -v vi >/dev/null 2>&1; then
 else
   echo "No suitable editor found. Please install nvim, vim, or vi."
 fi
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
