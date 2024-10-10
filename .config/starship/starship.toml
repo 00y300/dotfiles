@@ -26,7 +26,7 @@ format = "[$symbol$environment]($style)"
 
 [java]
 symbol = " "
-format = "[$symbol$environment$version]($style)"
+format = "[ $symbol$environment$version]($style)"
 
 [fill]
 symbol = " "

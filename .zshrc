@@ -79,8 +79,6 @@ zinit cdreplay -q
 
 # Keybindings
 bindkey -e
-# bindkey '^u' history-search-backward
-# bindkey '^d' history-search-forward
 bindkey '^[w' kill-region
 
 # History settings
@@ -101,7 +99,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-# alias ls='colorls'
+alias ls='colorls'
 alias c='clear'
 
 # Shell integrations

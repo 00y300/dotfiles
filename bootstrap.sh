@@ -1,4 +1,4 @@
-#!/bin/bash
+  #!/bin/bash
 
 # Function to detect OS
 detect_os() {
@@ -26,10 +26,11 @@ install_brew() {
 install_packages() {
     local failed_packages=()
 
-    # Install Formulae (updated list)
+    # Install Formulae (updated list with additional packages)
     formulae=(
         stow tmux neovim fd ripgrep fzf lazygit zoxide lua luajit ruby
-        luarocks starship node
+        luarocks starship node java yazi ffmpegthumbnailer sevenzip jq
+        poppler imagemagick font-symbols-only-nerd-font pkg-config png-paste
     )
 
     for package in "${formulae[@]}"; do
@@ -41,7 +42,7 @@ install_packages() {
     # Install Casks
     casks=(
         battery miniconda chatgpt only-switch font-hurmit-nerd-font
-        quarto kitty zen-browser
+        quarto kitty zen-browser btop yazi
     )
 
     for cask in "${casks[@]}"; do
