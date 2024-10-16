@@ -1,6 +1,6 @@
 {
     "label" : "lock",
-    "action" : "swaylock",
+    "action" : "swaylock --grace -swaylock0",
     "text" : "Lock",
     "keybind" : "l"
 }
