@@ -63,3 +63,14 @@ vim.keymap.set("n", "<F5>", function()
     vim.notify("Spell Check: OFF", vim.log.levels.INFO)
   end
 end)
+
+-- Markdown-specific settings (wrap, linebreak, etc.)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.textwidth = 0
+    vim.opt_local.linebreak = true
+    vim.opt_local.breakat = [[\ \t!@*-+;:,./?]]
+  end,
+})

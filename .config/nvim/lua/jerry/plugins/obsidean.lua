@@ -11,12 +11,17 @@ return {
   --KeyMaps
   vim.keymap.set("n", "<leader>ofl", "<cmd>ObsidianFollowLink<CR>", { desc = "Obsidian Follow Link" }),
   opts = {
+
     workspaces = {
       {
         name = "School",
         path = "~/Documents/School Vault/",
       },
+
+      {
+        name = "SB",
+        path = "~/Documents/SB",
+      },
     },
-    -- see below for full list of options 👇
   },
 }
