@@ -6,7 +6,7 @@ return {
     config = function()
       local render_mardown = require("render-markdown")
       render_mardown.setup({
-        file_types = { "markdown", "quatro" },
+        file_types = { "markdown", "quarto" },
       })
     end,
   },

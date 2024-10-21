@@ -10,6 +10,7 @@ $fill\
 $nodejs\
 $conda\
 $java\
+$rust\
 $cmd_duration $jobs $time\
 $line_break\
 $character"""
@@ -22,11 +23,16 @@ format = "[$symbol($version )]($style)"
 [conda]
 ignore_base = false
 symbol = "󱔎 "
-format = "[$symbol$environment]($style)"
+format = "[$symbol$environment ]($style)"
 
 [java]
 symbol = " "
 format = "[ $symbol$environment$version]($style)"
+
+[rust]
+symbol = " "
+detect_files = ['Cargo.toml']
+format = "[$symbol($version)]($style)"
 
 [fill]
 symbol = " "
@@ -70,9 +76,6 @@ style = "yellow"
 
 [memory_usage]
 symbol = " "
-
-[rust]
-symbol = " "
 
 [time]
 disabled = false

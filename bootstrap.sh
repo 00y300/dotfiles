@@ -28,9 +28,9 @@ install_packages() {
 
     # Install Formulae (updated list with additional packages)
     formulae=(
-        stow tmux neovim fd ripgrep fzf lazygit zoxide lua luajit ruby
+        stow tmux neovim fd ripgrep fzf lazygit zoxide lua luajit 
         luarocks starship node java yazi ffmpegthumbnailer sevenzip jq
-        poppler imagemagick font-symbols-only-nerd-font pkg-config png-paste
+        poppler imagemagick font-symbols-only-nerd-font pkg-config pngpaste libyaml btop go
     )
 
     for package in "${formulae[@]}"; do
