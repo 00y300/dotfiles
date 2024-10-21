@@ -46,6 +46,7 @@ return {
         "latex",
         "java",
         "sql",
+        "rust",
       },
       incremental_selection = {
         enable = true,
