@@ -51,6 +51,13 @@ return {
         t({ "", "```" }),
       }),
 
+      -- Rust code block snippet
+      s("rust", {
+        t("```rust"),
+        t({ "", "" }),
+        i(1),
+        t({ "", "```" }),
+      }),
       -- python code block snippet
       s("python", {
         t("```python"),
@@ -142,6 +149,8 @@ return {
         { name = "buffer" }, -- text within current buffer
         { name = "path" }, -- file system paths
         { name = "vim-dadbod-completion" }, -- SQL Autocompletion
+        { name = "crates" },
+        -- require("crates.completion.cmp").setup(),
       }),
       -- configure lspkind for vs-code like pictograms in completion menu
       formatting = {

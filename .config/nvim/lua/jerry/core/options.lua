@@ -47,6 +47,12 @@ vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
 vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
 vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")
 
+-- Map Ctrl + h/j/k/l to navigate between splits in terminal mode
+vim.api.nvim_set_keymap("t", "<C-h>", [[<C-\><C-n><C-w>h]], { noremap = true })
+vim.api.nvim_set_keymap("t", "<C-j>", [[<C-\><C-n><C-w>j]], { noremap = true })
+vim.api.nvim_set_keymap("t", "<C-k>", [[<C-\><C-n><C-w>k]], { noremap = true })
+vim.api.nvim_set_keymap("t", "<C-l>", [[<C-\><C-n><C-w>l]], { noremap = true })
+
 -- Obsidean Plugin Options
 opt.conceallevel = 2
 
@@ -65,12 +71,12 @@ vim.keymap.set("n", "<F5>", function()
 end)
 
 -- Markdown-specific settings (wrap, linebreak, etc.)
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
-  callback = function()
-    vim.opt_local.wrap = true
-    vim.opt_local.textwidth = 0
-    vim.opt_local.linebreak = true
-    vim.opt_local.breakat = [[\ \t!@*-+;:,./?]]
-  end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "markdown",
+--   callback = function()
+--     vim.opt_local.wrap = true
+--     vim.opt_local.textwidth = 0
+--     vim.opt_local.linebreak = true
+--     vim.opt_local.breakat = [[\ \t!@*-+;:,./?]]
+--   end,
+-- })

@@ -19,8 +19,7 @@ return {
         enable = true,
       },
       java_debug_adapter = {
-        -- enable = true,
-        enable = false,
+        enable = true,
       },
       spring_boot_tools = {
         enable = true,
@@ -38,6 +37,13 @@ return {
         invalid_mason_registry = true,
       },
     })
+    require("lspconfig").rust_analyzer.setup({
+      handlers = {
+        -- By assigning an empty function, you can remove the notifications
+        -- printed to the cmd
+        ["$/progress"] = function(_, result, ctx) end,
+      },
+    })
     require("lspconfig").jdtls.setup({
       handlers = {
         ["$/progress"] = function(_, result, ctx) end,
@@ -47,8 +53,9 @@ return {
           configuration = {
             runtimes = {
               {
-                name = "JavaSE-21",
-                path = "~/.asdf/installs/java/openjdk-21",
+                name = "OpenJDK21",
+                -- path = "~/.asdf/installs/java/openjdk-21",
+                path = "~/.asdf/installs/java/openjdk-21/",
                 default = true,
               },
             },

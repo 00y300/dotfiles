@@ -26,6 +26,7 @@ return {
         quarto = { "injected" },
         java = { "clang-format" },
         sql = { "sqlfmt" },
+        rust = { "ast_grep" },
       },
       formatters = {
         mystylua = {

@@ -27,7 +27,7 @@ return {
           "pyright",
           "clangd",
           "neocmake",
-          "sqls",
+          -- "sqls",
           "jsonls",
         },
       })
@@ -46,6 +46,7 @@ return {
           "cmakelint", -- CMakeLinter
           "gersemi", -- CMakeFormatter
           "sqlfmt", -- SQL formater
+          "ast_grep", --Rust Formatter
         },
       })
     end,
