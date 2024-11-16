@@ -1,5 +1,7 @@
 return {
   "norcalli/nvim-colorizer.lua",
+
+  ft = { "javascript, css" },
   config = function()
     -- Attaches to every FileType mode
     require("colorizer").setup()
