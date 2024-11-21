@@ -12,7 +12,7 @@ return {
       python = { "pylint" },
       cpp = { "trivy" },
       java = { "trivy" },
-      rust = { "trivy" },
+      -- rust = { "trivy" },
       cmake = { "cmakelint" },
     }
 

@@ -66,6 +66,22 @@ return {
         t({ "", "```" }),
       }),
 
+      -- HTML code block snippet
+      s("html", {
+        t("```html"),
+        t({ "", "" }),
+        i(1),
+        t({ "", "```" }),
+      }),
+
+      -- CSS code block snippet
+      s("css", {
+        t("```css"),
+        t({ "", "" }),
+        i(1),
+        t({ "", "```" }),
+      }),
+
       -- SQL code block snippet
       s("sql", {
         t("```sql"),

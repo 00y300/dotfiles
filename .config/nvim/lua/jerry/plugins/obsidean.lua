@@ -2,8 +2,7 @@ return {
   "epwalsh/obsidian.nvim",
   version = "*", -- recommended, use latest release instead of latest commit
   lazy = true,
-  dependencies = {
-    -- Required.
+  dependencies = { -- Required.
     "nvim-lua/plenary.nvim",
   },
 
@@ -31,7 +30,7 @@ return {
             date_format = "%m-%d-%Y", -- MM-DD-YYYY format
             alias_format = "%B %-d, %Y",
           },
-          new_notes_location = "/Inbox",
+          notes_subdir = "/Inbox/",
         },
       },
 
@@ -44,11 +43,12 @@ return {
 
   keys = {
 
-    { "<leader>o", "", desc = "+test" },
+    { "<leader>o", "", desc = "+Obsidian" },
     { "<leader>ol", "<cmd>ObsidianLink<CR>", desc = "Create Link (Obsidian)" },
     { "<leader>of", "<cmd>ObsidianFollowLink<CR>", desc = "Follow Link (Obsidian)" },
     { "<leader>on", "<cmd>ObsidianNew<CR>", desc = "Create New Note (Obsidian)" },
     { "<leader>ot", "<cmd>ObsidianToday<CR>", desc = "Open Today’s Note (Obsidian)" },
+    { "<leader>ott", "<cmd>ObsidianTemplate<CR>", desc = "Applies Template to Note" },
     { "<leader>oy", "<cmd>ObsidianYesterday<CR>", desc = "Open Yesterday’s Note (Obsidian)" },
     { "<leader>os", "<cmd>ObsidianSearch<CR>", desc = "Search Notes (Obsidian)" },
     { "<leader>ob", "<cmd>ObsidianBacklinks<CR>", desc = "Show Backlinks (Obsidian)" },

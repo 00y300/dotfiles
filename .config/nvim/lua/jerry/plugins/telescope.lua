@@ -22,7 +22,10 @@ return {
     })
 
     telescope.setup({
+
       defaults = {
+
+        file_ignore_patterns = { "node%_modules/.*" },
         path_display = { "smart" },
         mappings = {
           i = {
@@ -36,12 +39,12 @@ return {
       },
       pickers = {
         live_grep = {
-          additional_args = function(opts)
+          --[[ additional_args = function(opts)
             return { "--hidden" }
-          end,
+          end, ]]
         },
         find_files = {
-          hidden = true,
+          -- hidden = true,
         },
       },
     })
