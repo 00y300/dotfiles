@@ -43,6 +43,14 @@ return {
         t({ "", "```" }),
       }),
 
+      -- Javascript code block snippet
+      s("javascript", {
+        t("```javascript"),
+        t({ "", "" }),
+        i(1),
+        t({ "", "```" }),
+      }),
+
       -- Go code block snippet
       s("go", {
         t("```go"),
