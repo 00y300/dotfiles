@@ -6,8 +6,6 @@ return {
     "nvim-lua/plenary.nvim",
   },
 
-  -- Replace the previous `ft` or `config` with this event key
-
   opts = {
     workspaces = {
       {
@@ -55,5 +53,38 @@ return {
     { "<leader>om", "<cmd>ObsidianMarkdown<CR>", desc = "Insert Markdown Link (Obsidian)" },
     { "<leader>ow", "<cmd>ObsidianWorkspace<CR>", desc = "Switch Workspace (Obsidian)" },
     { "<leader>od", "<cmd>ObsidianDelete<CR>", desc = "Delete Note (Obsidian)" },
+
+    -- Add a keybinding for moving the current file
+    {
+      "<leader>oz",
+      function()
+        local filepath = vim.fn.expand("%:p") -- Get the absolute path of the current file
+        local filename = vim.fn.expand("%:t") -- Get the filename
+        local target_dir = vim.fn.expand("~/Documents/ZK/Zettelkasten/") -- Expand the target directory
+        local target_path = target_dir .. filename
+
+        -- Ensure the target directory exists
+        if vim.fn.isdirectory(target_dir) == 0 then
+          vim.fn.mkdir(target_dir, "p") -- Create directory if it doesn't exist
+        end
+
+        -- Check if the file exists
+        if vim.fn.filereadable(filepath) == 1 then
+          -- Move the file
+          local success, err = os.rename(filepath, target_path)
+          if success then
+            print("Moved " .. filename .. " to " .. target_dir)
+
+            -- Reload the buffer with the new file location
+            vim.cmd("edit " .. target_path)
+          else
+            print("Error moving file: " .. (err or "unknown error"))
+          end
+        else
+          print("Error: File does not exist or is not readable.")
+        end
+      end,
+      desc = "Move current file to ZK folder",
+    },
   },
 }
