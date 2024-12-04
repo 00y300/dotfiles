@@ -5,15 +5,12 @@ return {
     "nvim-lua/plenary.nvim",
     "antoinemadec/FixCursorHold.nvim",
     "nvim-treesitter/nvim-treesitter",
-    "nvim-neotest/neotest-python", -- Added the Python adapter dependency
+    "nvim-neotest/neotest-python",
   },
   config = function()
-    local neotest = require("neotest")
-
-    -- Setup configuration for neotest with Python adapter
-    neotest.setup({
+    require("neotest").setup({
       adapters = {
-        require("neotest-python"),
+        require("neotest-python")({}),
       },
     })
   end,
@@ -56,7 +53,7 @@ return {
       desc = "Toggle Summary (Neotest)",
     },
     {
-      "<leader>tO", -- Updated to resolve conflict
+      "<leader>tO",
       function()
         require("neotest").output.open({ enter = true, auto_close = true })
       end,

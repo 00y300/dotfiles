@@ -1,6 +1,7 @@
 return {
   {
     "akinsho/toggleterm.nvim",
+    enabled = false,
     keys = {
       { "<leader>t", "<cmd>ToggleTerm<CR>", desc = "Toggle the terminal" },
       { "<leader>tx", ":lua send_exit_to_terminal()<CR>", desc = "Send exit to the terminal" },

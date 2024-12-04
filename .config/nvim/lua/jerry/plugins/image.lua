@@ -27,7 +27,6 @@ return {
         },
         editor_only_render_when_focused = false,
         window_overlap_clear_enabled = true,
-        -- window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', 'scrollview' },
         tmux_show_only_in_active_window = true,
         window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "scrollview", "scrollview_sign" },
         max_width = nil,
@@ -94,6 +93,39 @@ return {
       end, { buffer = true, desc = "image [o]pen" })
 
       vim.keymap.set("n", "<leader>ic", clear_all_images, { desc = "image [c]lear" })
+    end,
+  },
+
+  { -- paste an image from the clipboard or drag-and-drop
+    "HakonHarnes/img-clip.nvim",
+    ft = { "markdown", "quarto", "latex" },
+    opts = {
+      default = {
+        dir_path = "img",
+        extension = "webp", ---@type string
+        process_cmd = "convert - -quality 75 webp:-", ---@type string
+      },
+      filetypes = {
+        markdown = {
+          url_encode_path = true,
+          template = "![$CURSOR]($FILE_PATH)",
+          drag_and_drop = {
+            download_images = false,
+          },
+        },
+        quarto = {
+          url_encode_path = true,
+          template = "![$CURSOR]($FILE_PATH)",
+          drag_and_drop = {
+            download_images = false,
+          },
+        },
+      },
+    },
+    config = function(_, opts)
+      require("img-clip").setup(opts)
+      -- Change keybinding to <leader>ip for image pasting
+      vim.keymap.set("n", "<leader>ip", ":PasteImage<cr>", { desc = "insert [i]mage from clipboard" })
     end,
   },
 }

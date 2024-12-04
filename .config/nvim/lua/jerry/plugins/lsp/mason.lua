@@ -15,6 +15,7 @@ return {
 
       -- import mason
       require("mason").setup(conf)
+      vim.keymap.set("n", "<leader>M", ":<cmd>Mason<CR>", { desc = "Open Mason", silent = true })
 
       -- import mason-lspconfig
       require("mason-lspconfig").setup({
@@ -29,6 +30,7 @@ return {
           "neocmake",
           -- "sqls",
           "jsonls",
+          "tailwindcss",
         },
       })
 

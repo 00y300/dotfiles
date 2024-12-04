@@ -38,12 +38,6 @@ return {
     },
 
     vim.keymap.set("n", "<leader>oa", ":lua require'otter'.activate()<CR>", { desc = "Activate Otter", silent = true }),
-    vim.keymap.set(
-      "n",
-      "<leader>ipc",
-      "i```{python}<CR>```<esc>O",
-      { desc = "Insert Python Code Chunk", silent = true }
-    ),
     vim.keymap.set("n", "<leader>rc", ":QuartoSend<CR>", { desc = "Quarto send cell", silent = true }),
     vim.keymap.set("n", "<leader>rA", ":QuartoSendAbove<CR>", { desc = "Quarto send cell and above", silent = true }),
     vim.keymap.set("n", "<leader>rB", ":QuartoSendBelow<CR>", { desc = "Quarto send below", silent = true }),
@@ -68,48 +62,6 @@ return {
         },
       },
     },
-  },
-
-  { -- paste an image from the clipboard or drag-and-drop
-    "HakonHarnes/img-clip.nvim",
-    event = "BufEnter",
-    ft = { "markdown", "quarto", "latex" },
-    opts = {
-      default = {
-        dir_path = "img",
-        -- extension = "avif",
-        -- process_cmd = "convert - -quality 75 avif:-", --@type string
-
-        extension = "webp", ---@type string
-        process_cmd = "convert - -quality 75 webp:-", ---@type string
-
-        -- extension = "png", ---@type string
-        -- process_cmd = "convert - -quality 75 png:-", ---@type string
-
-        -- extension = "jpg", ---@type string
-        -- process_cmd = "convert - -quality 75 jpg:-", ---@type string
-      },
-      filetypes = {
-        markdown = {
-          url_encode_path = true,
-          template = "![$CURSOR]($FILE_PATH)",
-          drag_and_drop = {
-            download_images = false,
-          },
-        },
-        quarto = {
-          url_encode_path = true,
-          template = "![$CURSOR]($FILE_PATH)",
-          drag_and_drop = {
-            download_images = false,
-          },
-        },
-      },
-    },
-    config = function(_, opts)
-      require("img-clip").setup(opts)
-      vim.keymap.set("n", "<leader>ii", ":PasteImage<cr>", { desc = "insert [i]mage from clipboard" })
-    end,
   },
 
   { -- preview equations

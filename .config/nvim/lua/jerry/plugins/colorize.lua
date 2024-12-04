@@ -1,44 +1,33 @@
 return {
-  "norcalli/nvim-colorizer.lua",
-
-  ft = { "javascript, css" },
+  -- "norcalli/nvim-colorizer.lua",
+  "NvChad/nvim-colorizer.lua",
+  -- ft = { "javascript", "css" },
+  event = "BufReadPre",
   config = function()
-    -- Attaches to every FileType mode
-    require("colorizer").setup()
-
-    -- Attach to certain Filetypes, add special configuration for `html`
-    -- Use `background` for everything else.
     require("colorizer").setup({
-      "css",
-      "javascript",
-      html = {
-        mode = "foreground",
+      filetypes = { "javascript", "css", "html" },
+      user_default_options = {
+        names = false, -- Disable "name" codes like Blue or Gray
+        RGB = true, -- Enable #RGB hex codes
+        RRGGBB = true, -- Enable #RRGGBB hex codes
+        RRGGBBAA = false, -- Disable #RRGGBBAA hex codes
+        AARRGGBB = false, -- Disable 0xAARRGGBB hex codes
+        rgb_fn = true, -- Enable CSS rgb() and rgba() functions
+        hsl_fn = false, -- Disable CSS hsl() and hsla() functions
+        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+        css_fn = false, -- Disable all CSS *functions*: rgb_fn, hsl_fn
+        mode = "background", -- Set the display mode to 'background'
+        tailwind = true, -- Enable Tailwind CSS colors
+        sass = { enable = false, parsers = { "css" } }, -- Disable Sass colors
+        virtualtext = "■", -- Virtualtext character
+        virtualtext_inline = false, -- Disable inline virtualtext
+        virtualtext_mode = "foreground", -- Virtualtext highlight mode
+        always_update = false, -- Disable updates when buffer is not focused
       },
-    })
-
-    -- Use the `default_options` as the second parameter, which uses
-    -- `foreground` for every mode. This is the inverse of the previous
-    -- setup configuration.
-    require("colorizer").setup({
-      "css",
-      "javascript",
-      html = { mode = "background" },
-    }, { mode = "foreground" })
-
-    -- Use the `default_options` as the second parameter, which uses
-    -- `foreground` for every mode. This is the inverse of the previous
-    -- setup configuration.
-    require("colorizer").setup({
-      "*", -- Highlight all files, but customize some others.
-      css = { rgb_fn = true }, -- Enable parsing rgb(...) functions in css.
-      html = { names = false }, -- Disable parsing "names" like Blue or Gray
-    })
-
-    -- Exclude some filetypes from highlighting by using `!`
-    require("colorizer").setup({
-      "*", -- Highlight all files, but customize some others.
-      "!vim", -- Exclude vim from highlighting.
-      -- Exclusion Only makes sense if '*' is specified!
+      -- buftypes = {
+      --   -- Apply options to all buffer types
+      -- },
+      user_commands = true, -- Enable all user commands
     })
   end,
 }

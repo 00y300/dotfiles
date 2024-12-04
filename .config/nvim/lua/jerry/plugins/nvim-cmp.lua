@@ -14,6 +14,7 @@ return {
     "saadparwaiz1/cmp_luasnip", -- for autocompletion
     "rafamadriz/friendly-snippets", -- useful snippets
     "onsails/lspkind.nvim", -- vs-code like pictograms
+    "tailwind-tools", -- added dependency
   },
   config = function()
     local cmp = require("cmp")
@@ -144,7 +145,6 @@ return {
     }, {
       key = "markdown",
     })
-
     -- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
     require("luasnip.loaders.from_vscode").lazy_load()
 
@@ -174,15 +174,18 @@ return {
         { name = "path" }, -- file system paths
         { name = "vim-dadbod-completion" }, -- SQL Autocompletion
         { name = "crates" },
-        -- require("crates.completion.cmp").setup(),
       }),
       -- configure lspkind for vs-code like pictograms in completion menu
       formatting = {
         format = lspkind.cmp_format({
           maxwidth = 50,
           ellipsis_char = "...",
+          before = require("tailwind-tools.cmp").lspkind_format, -- added tailwind-tools formatting
         }),
       },
     })
+
+    -- Highlight setup
+    vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
   end,
 }
