@@ -27,7 +27,7 @@ return {
           "lua_ls",
           "pyright",
           "clangd",
-          "neocmake",
+          -- "neocmake",
           -- "sqls",
           "jsonls",
           "tailwindcss",

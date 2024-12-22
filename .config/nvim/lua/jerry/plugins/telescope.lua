@@ -23,7 +23,7 @@ return {
 
     telescope.setup({
       defaults = {
-        file_ignore_patterns = { "node_modules/.*" },
+        file_ignore_patterns = { "node_modules/.*", ".next/*" },
         path_display = { "smart" },
         mappings = {
           i = {
@@ -31,6 +31,7 @@ return {
             ["<C-j>"] = actions.move_selection_next,
             ["<C-q>"] = actions.send_selected_to_qflist + custom_actions.open_trouble_qflist,
             ["<C-t>"] = open_with_trouble,
+            ["<c-d>"] = actions.delete_buffer,
           },
         },
       },
@@ -50,6 +51,6 @@ return {
     keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Fuzzy find recent files" })
     keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
     keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
-    -- keymap.set("n", "<leader>gwt", "<cmd>Telescope git_worktree<CR>", { desc = "Open Git Worktree Telescope" }) -- Added here
+    keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find Buffers" })
   end,
 }

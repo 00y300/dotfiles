@@ -12,6 +12,7 @@ return {
       python = { "pylint" },
       cpp = { "trivy" },
       java = { "trivy" },
+      go = { "ast_grep" },
       -- rust = { "trivy" },
       cmake = { "cmakelint" },
     }
