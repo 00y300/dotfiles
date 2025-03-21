@@ -24,5 +24,4 @@ alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias tkill="tmux kill-session -t"
 alias tks="tmux kill-server"
 alias tlist="tmux list-sessions"
-alias tattach="tmux attach"
-``
+alias tattach="tmux attach -t"

@@ -53,7 +53,6 @@ zmodload zsh/terminfo
 bindkey ^N history-incremental-search-backward 
 bindkey ^P history-incremental-search-forward
 
-
 ##FZF TAB
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
