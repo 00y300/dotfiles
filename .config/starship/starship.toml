@@ -9,8 +9,10 @@ $git_metrics\
 $fill\
 $nodejs\
 $conda\
+$python\
 $java\
 $rust\
+$golang\
 $cmd_duration $jobs $time\
 $line_break\
 $character"""
@@ -25,14 +27,25 @@ ignore_base = false
 symbol = "󱔎 "
 format = "[$symbol$environment ]($style)"
 
+
+[python]
+symbol = "󱔎 "
+format = "[$symbol$virtualenv $version ]($style)"
+
+
 [java]
 symbol = " "
-format = "[ $symbol$environment$version]($style)"
+format = "[ $symbol$environment$version ]($style)"
 
 [rust]
 symbol = " "
 detect_files = ['Cargo.toml']
 format = "[$symbol($version)]($style)"
+
+
+[golang]
+symbol = " "
+format = "[$symbol($version) ]($style)"
 
 [fill]
 symbol = " "

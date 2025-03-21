@@ -43,6 +43,7 @@ return {
 
     { "<leader>o", "", desc = "+Obsidian" },
     { "<leader>ol", "<cmd>ObsidianLink<CR>", desc = "Create Link (Obsidian)" },
+    { "<leader>oO", "<cmd>ObsidianOpen<CR>", desc = "Open Obsidian" },
     { "<leader>of", "<cmd>ObsidianFollowLink<CR>", desc = "Follow Link (Obsidian)" },
     { "<leader>on", "<cmd>ObsidianNew<CR>", desc = "Create New Note (Obsidian)" },
     { "<leader>ot", "<cmd>ObsidianToday<CR>", desc = "Open Today’s Note (Obsidian)" },

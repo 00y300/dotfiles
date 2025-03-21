@@ -23,7 +23,7 @@ return {
 
     telescope.setup({
       defaults = {
-        file_ignore_patterns = { "node_modules/.*", ".next/*" },
+        file_ignore_patterns = { "node_modules/.*", ".next/*", ".git/*" },
         path_display = { "smart" },
         mappings = {
           i = {

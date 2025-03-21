@@ -34,7 +34,7 @@ return {
       verification = {
         invalid_order = true,
         duplicate_setup_calls = true,
-        invalid_mason_registry = true,
+        invalid_mason_registry = false,
       },
     })
     require("lspconfig").rust_analyzer.setup({
@@ -48,20 +48,20 @@ return {
       handlers = {
         ["$/progress"] = function(_, result, ctx) end,
       },
-      settings = {
-        java = {
-          configuration = {
-            runtimes = {
-              {
-                name = "OpenJDK21",
-                -- path = "~/.asdf/installs/java/openjdk-21",
-                path = "~/.asdf/installs/java/openjdk-21/",
-                default = true,
-              },
-            },
-          },
-        },
-      },
+      -- settings = {
+      --   java = {
+      --     configuration = {
+      --       runtimes = {
+      --         {
+      --           name = "OpenJDK21",
+      --           -- path = "~/.asdf/installs/java/openjdk-21",
+      --           path = "~/.asdf/installs/java/openjdk-21/",
+      --           default = true,
+      --         },
+      --       },
+      --     },
+      --   },
+      -- },
     })
   end,
 }

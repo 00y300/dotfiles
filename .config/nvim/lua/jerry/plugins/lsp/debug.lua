@@ -1,7 +1,6 @@
 return {
   {
     "mfussenegger/nvim-dap",
-    -- event = "VeryLazy",
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "leoluz/nvim-dap-go",
@@ -20,32 +19,26 @@ return {
       { "<leader>db", "<cmd>DapToggleBreakpoint<CR>", desc = "Toggle breakpoint" },
       { "<leader>dx", "<cmd>DapTerminate<CR>", desc = "Terminate debugging session" },
       { "<leader>dr", "<cmd>DapReplToggle<CR>", desc = "Toggle REPL" },
+      { "<leader>de", "<cmd>lua require('dapui').eval()<CR>", desc = "Evaluate Expression" },
     },
     config = function()
       local dap = require("dap")
 
-      -- Set custom icons
+      -- Define custom icons
       vim.fn.sign_define("DapStopped", { text = "", texthl = "DiagnosticWarn", linehl = "DapStoppedLine" })
       vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticInfo" })
       vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "DiagnosticError" })
       vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "DiagnosticInfo" })
       vim.fn.sign_define("DapLogPoint", { text = ".>", texthl = "DiagnosticInfo" })
 
-      -- Setup dap-vscode-js
+      -- Setup for JavaScript/TypeScript debugging using vscode-js-debug
       require("dap-vscode-js").setup({
         debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
         adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost", "firefox" },
       })
 
-      -- Configure DAP for JavaScript, TypeScript, etc.
-      local js_based_languages = {
-        "typescript",
-        "javascript",
-        "typescriptreact",
-        "javascriptreact",
-        "vue",
-      }
-
+      -- Configure DAP for JavaScript-based languages
+      local js_based_languages = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" }
       for _, language in ipairs(js_based_languages) do
         dap.configurations[language] = {
           {
@@ -69,7 +62,7 @@ return {
               end)
             end,
             webRoot = vim.fn.getcwd(),
-            firefoxExecutable = "/opt/homebrew/bin/firefox",
+            firefoxExecutable = vim.fn.trim(vim.fn.system("readlink -e $(which firefox)")),
           },
           {
             type = "pwa-chrome",
@@ -98,34 +91,77 @@ return {
         }
       end
 
+      -- GDB Adapter and Configurations
+      dap.adapters.gdb = {
+        type = "executable",
+        command = vim.fn.trim(vim.fn.system("readlink -e $(which gdb)")),
+        args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
+      }
+
+      dap.configurations.c = {
+        {
+          name = "Launch",
+          type = "gdb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+          stopAtBeginningOfMainSubprogram = false,
+        },
+        {
+          name = "Select and attach to process",
+          type = "gdb",
+          request = "attach",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          pid = function()
+            local name = vim.fn.input("Executable name (filter): ")
+            return require("dap.utils").pick_process({ filter = name })
+          end,
+          cwd = "${workspaceFolder}",
+        },
+        {
+          name = "Attach to gdbserver :1234",
+          type = "gdb",
+          request = "attach",
+          target = "localhost:1234",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+        },
+      }
+
+      dap.configurations.cpp = dap.configurations.c
+      dap.configurations.rust = dap.configurations.c
+
       -- DAP UI Setup
       require("dapui").setup()
       require("dap-go").setup()
-      local dap, dapui = require("dap"), require("dapui")
-      dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open({ reset = true })
-      end
+      local dapui = require("dapui")
+      dap.listeners.after.event_initialized["dapui_config"] = dapui.open
       dap.listeners.before.event_terminated["dapui_config"] = dapui.close
       dap.listeners.before.event_exited["dapui_config"] = dapui.close
+
+      vim.api.nvim_set_keymap("v", "<M-k>", "<cmd>lua require('dapui').eval()<CR>", { noremap = true, silent = true })
     end,
   },
   {
-    "jay-babu/mason-nvim-dap.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "williamboman/mason.nvim",
-      "mfussenegger/nvim-dap",
-    },
+    "theHamsta/nvim-dap-virtual-text",
     config = function()
-      require("mason").setup()
-      require("mason-nvim-dap").setup({
-        ensure_installed = { "codelldb", "cppdbg", "python", "js", "chrome", "firefox" },
-        automatic_installation = false,
-        handlers = {
-          function(config)
-            require("mason-nvim-dap").default_setup(config)
-          end,
-        },
+      require("nvim-dap-virtual-text").setup({
+        enabled = true, -- enable this plugin (the default)
+        enabled_commands = true, -- create commands for toggling and refreshing
+        highlight_changed_variables = true,
+        highlight_new_as_changed = false,
+        show_stop_reason = true, -- show stop reason when exceptions occur
+        commented = false, -- do not prefix virtual text with comment string
+        only_first_definition = true, -- show text only at the first variable definition
+        all_references = false,
+        clear_on_continue = false, -- avoid flickering on "continue"
       })
     end,
   },

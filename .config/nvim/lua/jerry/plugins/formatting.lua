@@ -1,13 +1,13 @@
 return {
   "stevearc/conform.nvim",
   event = { "BufReadPre", "BufNewFile" },
+
   config = function()
     local conform = require("conform")
-
     conform.setup({
       notify_on_error = false,
       format_on_save = {
-        timeout_ms = 500,
+        timeout_ms = 2500,
         lsp_fallback = true,
       },
       formatters_by_ft = {
@@ -17,21 +17,27 @@ return {
         typescriptreact = { "prettier" },
         css = { "prettier" },
         html = { "prettier" },
-        json = { "prettier" },
+        -- json = { "prettier" },
         yaml = { "prettier" },
         lua = { "mystylua" },
         python = { "isort", "black" },
         cpp = { "clang-format" },
+        c = { "clang-format" },
         cmake = { "gersemi" },
         quarto = { "injected" },
         java = { "clang-format" },
-        sql = { "sqlfmt" },
-        go = { "ast_grep" },
+        go = { "goimports", "gofumpt" },
+        nix = { "nixfmt" },
+        json = { "jq" },
       },
       formatters = {
         mystylua = {
           command = "stylua",
           args = { "--indent-type", "Spaces", "--indent-width", "2", "-" },
+        },
+
+        black = {
+          prepend_args = { "--fast" },
         },
       },
     })
@@ -69,5 +75,8 @@ return {
         timeout_ms = 1000,
       })
     end, { desc = "Format file or range (in visual mode)" })
+
+    -- Added format command
+    require("conform").format({ async = true, lsp_fallback = true })
   end,
 }

@@ -31,6 +31,7 @@ return {
         globalstatus = true,
       },
       sections = {
+        lualine_c = { "filename" },
         lualine_x = {
           { "encoding" },
           {

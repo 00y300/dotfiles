@@ -1,0 +1,35 @@
+# Auto correct mistakes
+setopt correct
+
+# Extended globbing. Allows using regular expressions with *
+setopt extendedglob
+
+# Case insensitive globbing
+setopt nocaseglob
+
+# Array expansion with parameters
+setopt sh_word_split
+
+# Don't warn about running processes when exiting
+setopt nocheckjobs
+
+# Sort filenames numerically when it makes sense
+setopt numericglobsort
+
+# No beep
+setopt nobeep
+
+# Immediately append history instead of overwriting
+setopt appendhistory
+
+# If a new command is a duplicate, remove the older one
+setopt histignorealldups
+
+# If only directory path is entered, cd there
+setopt autocd
+
+# Save commands are added to the history immediately, otherwise only when shell exits
+setopt inc_append_history
+
+# Don't save commands that start with space
+setopt histignorespace

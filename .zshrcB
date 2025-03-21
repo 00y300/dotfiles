@@ -1,0 +1,87 @@
+
+# Source asdf using readlink (replace default asdf path usage)
+#------------------------------------------------------------------------------
+# . "$(dirname "$(dirname "$(readlink -f "$(which asdf)")")")/share/asdf-vm/asdf.sh"
+
+#------------------------------------------------------------------------------
+# Set XDG Config Home
+#------------------------------------------------------------------------------
+export XDG_CONFIG_HOME="$HOME/.config"
+
+
+#------------------------------------------------------------------------------
+# Starship prompt
+#------------------------------------------------------------------------------
+eval "$(starship init zsh)"
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+
+
+#------------------------------------------------------------------------------
+# Completion setup
+#------------------------------------------------------------------------------
+autoload -Uz compinit && compinit
+
+#------------------------------------------------------------------------------
+# Keybindings
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# History settings
+#------------------------------------------------------------------------------
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory \
+       sharehistory \
+       hist_ignore_space \
+       hist_ignore_all_dups \
+       hist_save_no_dups \
+       hist_ignore_dups \
+       hist_find_no_dups
+
+#------------------------------------------------------------------------------
+# Completion styling
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# FZF-Tab configuration
+#------------------------------------------------------------------------------
+# zstyle ':fzf-tab:complete:*' fzf-preview \
+#   'bat --style=numbers --color=always --line-range=:500 $realpath'
+# zstyle ':fzf-tab:complete:cd:*' fzf-preview \
+#   'ls --color $realpath'
+# zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview \
+#   'ls --color $realpath'
+
+#------------------------------------------------------------------------------
+# Aliases
+#------------------------------------------------------------------------------
+alias ls='colorls'
+alias c='clear'
+--() { cd -; }
+
+#------------------------------------------------------------------------------
+# Shell integrations (fzf, zoxide)
+#------------------------------------------------------------------------------
+eval "$(fzf --zsh)"
+eval "$(zoxide init --cmd cd zsh)"
+
+#------------------------------------------------------------------------------
+# Disable OpenSSL legacy mode for cryptography
+#------------------------------------------------------------------------------
+export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
+
+#------------------------------------------------------------------------------
+# Editor setup
+# Prefer Neovim, fallback to Vim or Vi
+#------------------------------------------------------------------------------
+if command -v nvim >/dev/null 2>&1; then
+  export EDITOR="nvim"
+elif command -v vim >/dev/null 2>&1; then
+  export EDITOR="vim"
+elif command -v vi >/dev/null 2>&1; then
+  export EDITOR="vi"
+else
+  echo "No suitable editor found. Please install nvim, vim, or vi."
+  fi

@@ -47,6 +47,7 @@ return {
         "java",
         "sql",
         "rust",
+        "go",
       },
       incremental_selection = {
         enable = true,

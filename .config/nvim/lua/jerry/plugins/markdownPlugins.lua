@@ -14,4 +14,30 @@ return {
     "bullets-vim/bullets.vim",
     ft = { "markdown" },
   },
+  {
+    "epilande/checkbox-cycle.nvim",
+    ft = "markdown",
+    -- Optional: Configuration
+    opts = {
+      -- Example: Custom states
+      states = { "[ ]", "[/]", "[x]", "[~]" },
+    },
+    -- Optional: Key mappings
+    keys = {
+      {
+        "<CR>",
+        "<Cmd>CheckboxCycleNext<CR>",
+        desc = "Checkbox Next",
+        ft = { "markdown" },
+        mode = { "n", "v" },
+      },
+      {
+        "<S-CR>",
+        "<Cmd>CheckboxCyclePrev<CR>",
+        desc = "Checkbox Previous",
+        ft = { "markdown" },
+        mode = { "n", "v" },
+      },
+    },
+  },
 }
