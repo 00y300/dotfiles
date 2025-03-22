@@ -37,6 +37,19 @@ return {
         adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost", "firefox" },
       })
 
+      -- Dynamically build the Firefox adapter path
+      -- This is done within Nix
+      local firefoxAdapterPath = vim.fn.trim(
+        vim.fn.system("nix eval --raw nixpkgs#vscode-extensions.firefox-devtools.vscode-firefox-debug.outPath")
+      ) .. "/share/vscode/extensions/firefox-devtools.vscode-firefox-debug/dist/adapter.bundle.js"
+
+      -- Add Firefox adapter definition using the computed path
+      dap.adapters.firefox = {
+        type = "executable",
+        command = "node",
+        args = { firefoxAdapterPath },
+      }
+
       -- Configure DAP for JavaScript-based languages
       local js_based_languages = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" }
       for _, language in ipairs(js_based_languages) do
