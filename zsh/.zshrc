@@ -35,6 +35,14 @@ fi
 eval "$(starship init zsh)"
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
 
+
+#------------------------------------------------------------------------------
+# Shell Integration
+#------------------------------------------------------------------------------
+eval "$(fzf --zsh)"
+eval "$(zoxide init --cmd cd zsh)"
+
+
 #------------------------------------------------------------------------------
 # ZSH Plugins
 #------------------------------------------------------------------------------
@@ -50,8 +58,8 @@ source ~/plugins/fzf-tab/fzf-tab.plugin.zsh
 zmodload zsh/terminfo
 
 # History substring search (Arrow keys)
-bindkey ^N history-incremental-search-backward 
-bindkey ^P history-incremental-search-forward
+# bindkey '^N' history-incremental-search-backward 
+# bindkey '^P' history-incremental-search-forward
 
 ##FZF TAB
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
