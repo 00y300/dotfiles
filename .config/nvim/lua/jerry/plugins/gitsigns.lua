@@ -24,14 +24,14 @@ return {
           if vim.wo.diff then
             vim.cmd.normal({ "]h", bang = true })
           else
-            gitsigns.next_hunk()
+            gitsigns.nav_hunk("next")
           end
         end, { desc = "Next git hunk" })
         map("n", "[h", function()
           if vim.wo.diff then
             vim.cmd.normal({ "[h", bang = true })
           else
-            gitsigns.prev_hunk()
+            gitsigns.nav_hunk("prev")
           end
         end, { desc = "Previous git hunk" })
 
