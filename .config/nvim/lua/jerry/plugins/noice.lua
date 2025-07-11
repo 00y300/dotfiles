@@ -3,9 +3,8 @@ return {
   {
     "folke/noice.nvim",
     event = "VeryLazy",
-    -- Key mapping to dismiss Noice messages
-    vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", { desc = "Dismiss Noice Messages" }),
-    vim.keymap.set("n", "<leader>nl", "<cmd>NoiceLast<CR>", { desc = "Check Last Noice Messages" }),
+    -- vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", { desc = "Dismiss Noice Messages" }),
+    -- vim.keymap.set("n", "<leader>nl", "<cmd>NoiceLast<CR>", { desc = "Check Last Noice Messages" }),
 
     opts = function(_, opts)
       -- Ensure opts.routes is initialized
@@ -74,24 +73,24 @@ return {
     },
   },
 
-  {
+  --[[ {
     "rcarriga/nvim-notify",
     opts = {
       timeout = 5000,
     },
-  },
+  }, ]]
 
   -- animations
-  {
-    "echasnovski/mini.animate",
-    event = "VeryLazy",
-    opts = function(_, opts)
-      opts.scroll = {
-        enable = false,
-      }
-      opts.resize = {
-        enable = false,
-      }
-    end,
-  },
+  -- {
+  --   "echasnovski/mini.animate",
+  --   event = "VeryLazy",
+  --   opts = function(_, opts)
+  --     opts.scroll = {
+  --       enable = false,
+  --     }
+  --     opts.resize = {
+  --       enable = false,
+  --     }
+  --   end,
+  -- },
 }

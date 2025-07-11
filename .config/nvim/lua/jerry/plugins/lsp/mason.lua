@@ -1,6 +1,7 @@
 return {
   {
     "williamboman/mason.nvim",
+    enabled = false,
     opts = function()
       -- Your custom Mason configuration
       return {

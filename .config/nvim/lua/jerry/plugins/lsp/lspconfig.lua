@@ -44,29 +44,26 @@ return {
         local opts = { buffer = event.buf, silent = true }
 
         -- Keybindings (converted from your old config):
-        opts.desc = "Show LSP references"
-        vim.keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
+        -- opts.desc = "Show LSP references"
+        -- vim.keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
 
-        opts.desc = "Go to declaration"
-        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+        -- opts.desc = "Go to declaration"
+        -- vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 
-        opts.desc = "Show LSP definitions"
-        vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+        -- opts.desc = "Show LSP definitions"
+        -- vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
 
-        opts.desc = "Show LSP implementations"
-        vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
+        -- opts.desc = "Show LSP implementations"
+        -- vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
 
-        opts.desc = "Show LSP type definitions"
-        vim.keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
+        -- opts.desc = "Show LSP type definitions"
+        -- vim.keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
 
         opts.desc = "See available code actions"
         vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
 
         opts.desc = "Smart rename"
         vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-
-        opts.desc = "Show buffer diagnostics"
-        vim.keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
 
         opts.desc = "Show line diagnostics"
         vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
@@ -94,7 +91,38 @@ return {
     require("lspconfig").gopls.setup({})
     require("lspconfig").clangd.setup({})
     require("lspconfig").ts_ls.setup({})
+    require("lspconfig").harper_ls.setup({
 
+      filetypes = { "markdown" },
+      settings = {
+        ["harper-ls"] = {
+          userDictPath = "",
+          fileDictPath = "",
+          linters = {
+            SpellCheck = true,
+            SpelledNumbers = false,
+            AnA = true,
+            SentenceCapitalization = true,
+            UnclosedQuotes = true,
+            WrongQuotes = false,
+            LongSentences = true,
+            RepeatedWords = true,
+            Spaces = true,
+            Matcher = true,
+            CorrectNumberSuffix = true,
+          },
+          codeActions = {
+            ForceStable = false,
+          },
+          markdown = {
+            IgnoreLinkTitle = false,
+          },
+          diagnosticSeverity = "hint",
+          isolateEnglish = false,
+          dialect = "American",
+        },
+      },
+    })
     -- ADD YOUR LUA_LS SNIPPET HERE:
     lspconfig["lua_ls"].setup({
       capabilities = capabilities,

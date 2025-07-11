@@ -1,7 +1,6 @@
 -- Quarto and Otter setup
 -- Neoovim Plugin Configuration
 return {
-
   { -- requires plugins in lua/plugins/treesitter.lua and lua/plugins/lsp.lua
     -- for complete functionality (language features)
     "quarto-dev/quarto-nvim",
@@ -34,7 +33,6 @@ return {
       dependencies = {
         "nvim-treesitter/nvim-treesitter",
       },
-      -- "nvim-treesitter/nvim-treesitter",
     },
 
     vim.keymap.set("n", "<leader>oa", ":lua require'otter'.activate()<CR>", { desc = "Activate Otter", silent = true }),
@@ -61,13 +59,6 @@ return {
           force_ft = "quarto",
         },
       },
-    },
-  },
-
-  { -- preview equations
-    "jbyuki/nabla.nvim",
-    keys = {
-      { "<leader>qm", ':lua require"nabla".toggle_virt()<cr>', desc = "toggle [m]ath equations" },
     },
   },
 }
