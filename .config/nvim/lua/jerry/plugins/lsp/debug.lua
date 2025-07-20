@@ -48,7 +48,15 @@ return {
       { "<leader>di", "<cmd>DapStepInto<CR>", desc = "Step into" },
       { "<leader>dO", "<cmd>DapStepOut<CR>", desc = "Step out" },
       { "<leader>db", "<cmd>DapToggleBreakpoint<CR>", desc = "Toggle breakpoint" },
-      { "<leader>dx", "<cmd>DapTerminate<CR>", desc = "Terminate debugging session" },
+      {
+        "<leader>dx",
+        function()
+          require("dap").terminate()
+          require("dapui").close()
+          require("nvim-dap-virtual-text").refresh()
+        end,
+        desc = "Terminate debugging session",
+      },
       { "<leader>dr", "<cmd>DapReplToggle<CR>", desc = "Toggle REPL" },
       { "<leader>de", "<cmd>lua require('dapui').eval()<CR>", desc = "Evaluate Expression" },
     },
@@ -70,8 +78,8 @@ return {
       local data_path = vim.fn.stdpath("data")
 
       -- Setup signs efficiently
-
       local icons = {
+
         Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
         Breakpoint = { "", "DiagnosticInfo" },
         BreakpointRejected = { "", "DiagnosticError" },
@@ -86,6 +94,27 @@ return {
           linehl = sign[3],
           numhl = sign[3],
         })
+      end
+
+      -- Get C++ debug adapter path from Nix
+      local function get_cpp_debug_adapter_path()
+        local ok, cpp_debug_path = pcall(
+          vim.fn.trim,
+          vim.fn.system(
+            "NIXPKGS_ALLOW_UNFREE=1 nix eval --impure --raw nixpkgs#vscode-extensions.ms-vscode.cpptools.outPath 2>/dev/null"
+          )
+        )
+
+        if ok and cpp_debug_path ~= "" then
+          local full_path = cpp_debug_path
+            .. "/share/vscode/extensions/ms-vscode.cpptools/debugAdapters/bin/OpenDebugAD7"
+          -- Verify the binary exists
+          if vim.fn.executable(full_path) == 1 then
+            return full_path
+          end
+        end
+
+        return nil
       end
 
       -- Lazy setup for language-specific configurations
@@ -181,7 +210,7 @@ return {
       local function get_gdb_configs()
         return {
           {
-            name = "Launch",
+            name = "Launch (GDB)",
             type = "gdb",
             request = "launch",
             program = function()
@@ -192,7 +221,7 @@ return {
             stopAtBeginningOfMainSubprogram = false,
           },
           {
-            name = "Select and attach to process",
+            name = "Select and attach to process (GDB)",
             type = "gdb",
             request = "attach",
             program = function()
@@ -205,7 +234,7 @@ return {
             cwd = "${workspaceFolder}",
           },
           {
-            name = "Attach to gdbserver :1234",
+            name = "Attach to gdbserver :1234 (GDB)",
             type = "gdb",
             request = "attach",
             target = "localhost:1234",
@@ -215,6 +244,96 @@ return {
             cwd = "${workspaceFolder}",
           },
         }
+      end
+
+      local function get_cpp_configs()
+        local configs = {}
+
+        -- Add cppdbg configurations if available
+        local cpp_debug_path = get_cpp_debug_adapter_path()
+        if cpp_debug_path then
+          -- Setup cppdbg adapter
+          dap.adapters.cppdbg = {
+            id = "cppdbg",
+            type = "executable",
+            command = cpp_debug_path,
+          }
+
+          local cpp_configs = {
+            {
+              name = "Launch (cppdbg)",
+              type = "cppdbg",
+              request = "launch",
+              program = function()
+                return vim.fn.input("Path to executable: ", cwd .. "/", "file")
+              end,
+              cwd = "${workspaceFolder}",
+              stopAtEntry = false,
+              setupCommands = {
+                {
+                  text = "-enable-pretty-printing",
+                  description = "enable pretty printing",
+                  ignoreFailures = false,
+                },
+                {
+                  text = "-gdb-set print object on",
+                  description = "enable object printing",
+                  ignoreFailures = true,
+                },
+                {
+                  text = "-gdb-set print static-members on",
+                  description = "enable static member printing",
+                  ignoreFailures = true,
+                },
+                {
+                  text = "-gdb-set print vtbl on",
+                  description = "enable vtable printing",
+                  ignoreFailures = true,
+                },
+                {
+                  text = "-gdb-set print demangle on",
+                  description = "enable symbol demangling",
+                  ignoreFailures = true,
+                },
+                {
+                  text = "-gdb-set print sevenbit-strings off",
+                  description = "enable non-ASCII character printing",
+                  ignoreFailures = true,
+                },
+                {
+                  text = "-gdb-set charset UTF-8",
+                  description = "set charset to UTF-8",
+                  ignoreFailures = true,
+                },
+                {
+                  text = "-gdb-set auto-solib-add on",
+                  description = "automatically load shared library symbols",
+                  ignoreFailures = true,
+                },
+              },
+            },
+            {
+              name = "Attach to process (cppdbg)",
+              type = "cppdbg",
+              request = "attach",
+              program = function()
+                return vim.fn.input("Path to executable: ", cwd .. "/", "file")
+              end,
+              processId = function()
+                return require("dap.utils").pick_process()
+              end,
+              cwd = "${workspaceFolder}",
+            },
+          }
+
+          configs = vim.list_extend(configs, cpp_configs)
+        end
+
+        -- Add GDB configurations as fallback
+        local gdb_configs = get_gdb_configs()
+        configs = vim.list_extend(configs, gdb_configs)
+
+        return configs
       end
 
       -- Lazy configuration setup based on filetype
@@ -235,8 +354,8 @@ return {
             dap.configurations.go = get_go_configs()
           end
         elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
-          if not dap.configurations[ft] then
-            -- Setup GDB adapter lazily
+          if not dap.configurations.cpp then
+            -- Setup GDB adapter
             if not dap.adapters.gdb then
               dap.adapters.gdb = {
                 type = "executable",
@@ -244,10 +363,11 @@ return {
                 args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
               }
             end
-            local gdb_configs = get_gdb_configs()
-            dap.configurations.c = gdb_configs
-            dap.configurations.cpp = gdb_configs
-            dap.configurations.rust = gdb_configs
+
+            local cpp_configs = get_cpp_configs()
+            dap.configurations.cpp = cpp_configs
+            dap.configurations.c = dap.configurations.cpp
+            dap.configurations.rust = dap.configurations.cpp
           end
         end
       end
@@ -267,8 +387,14 @@ return {
       -- UI event handlers
       local dapui = require("dapui")
       dap.listeners.after.event_initialized["dapui_config"] = dapui.open
-      dap.listeners.before.event_terminated["dapui_config"] = dapui.close
-      dap.listeners.before.event_exited["dapui_config"] = dapui.close
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+        require("nvim-dap-virtual-text").refresh()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+        require("nvim-dap-virtual-text").refresh()
+      end
     end,
   },
 }
