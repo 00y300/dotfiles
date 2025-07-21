@@ -72,10 +72,7 @@ return {
       capabilities = capabilities,
     })
 
-    vim.lsp.enable("nil_ls", {
-      capabilities = capabilities,
-    })
-
+    -- Rust language server
     vim.lsp.enable("rust_analyzer", {
       capabilities = capabilities,
       settings = {
@@ -115,10 +112,11 @@ return {
       capabilities = capabilities,
     })
 
-    -- Harper language server for markdown
-    vim.lsp.enable("harper_ls", {
+    -- Harper language server for markdown (ONLY for .md files)
+    vim.lsp.config("harper_ls", {
       capabilities = capabilities,
       filetypes = { "markdown" },
+      root_markers = {}, -- Remove .git root marker
       settings = {
         ["harper-ls"] = {
           userDictPath = "",
