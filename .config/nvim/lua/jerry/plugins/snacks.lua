@@ -59,7 +59,11 @@ return {
     picker = {
       enabled = true,
       sources = {
+        files = {
+          hidden = true,
+        },
         buffers = {
+          hidden = true,
           win = {
             input = {
               keys = {
@@ -67,12 +71,6 @@ return {
               },
             },
           },
-          -- list = {
-          --   keys = {
-          --     ["<C-j>"] = { "list_down", mode = { "i", "n" } },
-          --     ["<C-k>"] = { "list_up", mode = { "i", "n" } },
-          --   },
-          -- },
         },
       },
     },
