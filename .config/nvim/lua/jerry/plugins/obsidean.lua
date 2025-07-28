@@ -9,14 +9,15 @@ return {
   },
 
   opts = {
+    legacy_commands = false,
     picker = {
       name = "snacks.pick",
     },
     workspaces = {
-      {
+      --[[ {
         name = "School",
         path = "~/Documents/School Vault/",
-      },
+      }, ]]
 
       {
         name = "ZK",
@@ -36,29 +37,22 @@ return {
           notes_subdir = "/Inbox/",
         },
       },
-
-      {
-        name = "SB",
-        path = "~/Documents/SB",
-      },
     },
   },
 
   keys = {
 
     { "<leader>o", "", desc = "+Obsidian" },
-    { "<leader>ol", "<cmd>ObsidianLink<CR>", desc = "Create Link (Obsidian)" },
-    { "<leader>oO", "<cmd>ObsidianOpen<CR>", desc = "Open Obsidian" },
-    { "<leader>of", "<cmd>ObsidianFollowLink<CR>", desc = "Follow Link (Obsidian)" },
-    { "<leader>on", "<cmd>ObsidianNew<CR>", desc = "Create New Note (Obsidian)" },
-    { "<leader>ot", "<cmd>ObsidianToday<CR>", desc = "Open Today’s Note (Obsidian)" },
-    { "<leader>ott", "<cmd>ObsidianTemplate<CR>", desc = "Applies Template to Note" },
-    { "<leader>oy", "<cmd>ObsidianYesterday<CR>", desc = "Open Yesterday’s Note (Obsidian)" },
-    { "<leader>os", "<cmd>ObsidianSearch<CR>", desc = "Search Notes (Obsidian)" },
-    { "<leader>ob", "<cmd>ObsidianBacklinks<CR>", desc = "Show Backlinks (Obsidian)" },
-    { "<leader>om", "<cmd>ObsidianMarkdown<CR>", desc = "Insert Markdown Link (Obsidian)" },
-    { "<leader>ow", "<cmd>ObsidianWorkspace<CR>", desc = "Switch Workspace (Obsidian)" },
-    { "<leader>od", "<cmd>ObsidianDelete<CR>", desc = "Delete Note (Obsidian)" },
+    { "<leader>ol", "<cmd>Obsidian link<CR>", desc = "Create Link (Obsidian)" },
+    { "<leader>oO", "<cmd>Obsidian open<CR>", desc = "Open Obsidian" },
+    { "<leader>of", "<cmd>Obsidian follow_link<CR>", desc = "Follow Link (Obsidian)" },
+    { "<leader>on", "<cmd>Obsidian new<CR>", desc = "Create New Note (Obsidian)" },
+    -- { "<leader>ot", "<cmd>Obsidian today<CR>", desc = "Open Today’s Note (Obsidian)" },
+    { "<leader>ott", "<cmd>Obsidian template<CR>", desc = "Applies Template to Note" },
+    { "<leader>oy", "<cmd>Obsidian yesterday<CR>", desc = "Open Yesterday’s Note (Obsidian)" },
+    { "<leader>os", "<cmd>Obsidian search<CR>", desc = "Search Notes (Obsidian)" },
+    { "<leader>ob", "<cmd>Obsidian backlinks<CR>", desc = "Show Backlinks (Obsidian)" },
+    { "<leader>ow", "<cmd>Obsidian workspace<CR>", desc = "Switch Workspace (Obsidian)" },
 
     -- Add a keybinding for moving the current file
     {
