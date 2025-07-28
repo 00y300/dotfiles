@@ -1,6 +1,7 @@
 return {
   "2KAbhishek/pickme.nvim",
   cmd = "PickMe",
+  enabled = false,
   event = "VeryLazy",
   dependencies = {
     -- Include at least one of these pickers:
