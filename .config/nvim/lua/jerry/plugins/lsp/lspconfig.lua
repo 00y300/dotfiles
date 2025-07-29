@@ -74,8 +74,8 @@ return {
 
     -- Rust language server
 
-    vim.enable.config("rust_analyzer")
-    vim.lsp.enable("rust_analyzer", {
+    vim.lsp.enable("rust_analyzer")
+    vim.lsp.config("rust_analyzer", {
       capabilities = capabilities,
       settings = {
         ["rust-analyzer"] = {
@@ -115,7 +115,7 @@ return {
     })
 
     -- Harper language server for markdown (ONLY for .md files)
-    vim.enable.config("harper_ls")
+    vim.lsp.enable("harper_ls")
     vim.lsp.config("harper_ls", {
       capabilities = capabilities,
       filetypes = { "markdown" },
@@ -151,8 +151,8 @@ return {
     })
 
     -- Lua language server
-    vim.enable.config("lua_ls")
-    vim.lsp.enable("lua_ls", {
+    vim.lsp.enable("lua_ls")
+    vim.lsp.config("lua_ls", {
       capabilities = capabilities,
       settings = {
         Lua = {
