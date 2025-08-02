@@ -1,12 +1,12 @@
 -- Updated LSP configuration for Neovim 0.11+
--- Uses the new vim.lsp.enable() approach instead of lspconfig.setup()
+-- Uses the new vim.lsp.enable() approach with blink.cmp integration
 
 return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
 
   dependencies = {
-    "hrsh7th/cmp-nvim-lsp",
+    "saghen/blink.cmp",
     { "antosha417/nvim-lsp-file-operations", config = true },
     { "folke/neodev.nvim", opts = {} },
   },
@@ -17,19 +17,16 @@ return {
     vim.diagnostic.config({
       signs = {
         text = {
-
-          [vim.diagnostic.severity.ERROR] = " ",
-          [vim.diagnostic.severity.WARN] = " ",
-          [vim.diagnostic.severity.INFO] = " ",
+          [vim.diagnostic.severity.ERROR] = " ",
+          [vim.diagnostic.severity.WARN] = " ",
+          [vim.diagnostic.severity.INFO] = " ",
           [vim.diagnostic.severity.HINT] = "󰠠 ",
         },
       },
     })
 
-    -- 2) Extend default capabilities to include cmp_nvim_lsp
-    local default_capabilities = vim.lsp.protocol.make_client_capabilities()
-    local capabilities =
-      vim.tbl_deep_extend("force", default_capabilities, require("cmp_nvim_lsp").default_capabilities())
+    -- 2) Get capabilities from blink.cmp instead of cmp_nvim_lsp
+    local capabilities = require("blink.cmp").get_lsp_capabilities()
 
     -- 3) Create an autocmd that runs whenever an LSP is actually attached to a buffer
     vim.api.nvim_create_autocmd("LspAttach", {
@@ -65,7 +62,7 @@ return {
       end,
     })
 
-    -- 4) Enable language servers using the new vim.lsp.enable() API
+    -- 4) Enable language servers using the new vim.lsp.enable() API with blink.cmp capabilities
 
     -- Nix language server
     vim.lsp.enable("nil_ls", {
@@ -73,7 +70,6 @@ return {
     })
 
     -- Rust language server
-
     vim.lsp.enable("rust_analyzer")
     vim.lsp.config("rust_analyzer", {
       capabilities = capabilities,
@@ -166,5 +162,8 @@ return {
         },
       },
     })
+
+    -- TailwindCSS
+    vim.lsp.enable("tailwindcss")
   end,
 }
