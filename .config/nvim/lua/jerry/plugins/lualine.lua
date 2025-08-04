@@ -107,7 +107,7 @@ return {
           { "encoding" },
           {
             "fileformat",
-            symbols = is_mac and { unix = "" } or nil,
+            symbols = is_mac and { unix = "" } or nil,
           },
           -- {
           --   virtual_env,
