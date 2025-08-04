@@ -12,8 +12,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup(
-  -- { { import = "jerry.plugins" }, { import = "jerry.plugins.lsp" }, { import = "jerry.plugins.ai" } },
-  { { import = "jerry.plugins" }, { import = "jerry.plugins.lsp" } },
+  { { import = "jerry.plugins" }, { import = "jerry.plugins.lsp" }, { import = "jerry.plugins.ai" } },
+  -- { { import = "jerry.plugins" }, { import = "jerry.plugins.lsp" } },
   {
     checker = {
       enabled = true,

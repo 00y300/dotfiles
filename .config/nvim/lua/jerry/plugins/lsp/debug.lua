@@ -79,7 +79,6 @@ return {
 
       -- Setup signs efficiently
       local icons = {
-
         Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
         Breakpoint = { "", "DiagnosticInfo" },
         BreakpointRejected = { "", "DiagnosticError" },
