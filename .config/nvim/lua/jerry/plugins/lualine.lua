@@ -9,14 +9,13 @@ return {
         claude = "󰋦",
         openai = "󱢆",
         codestral = "󱎥",
-        gemini = "",
-        Groq = "",
+        gemini = "",
+        Groq = "",
         Openrouter = "󱂇",
         Ollama = "󰳆",
         ["Llama.cpp"] = "󰳆",
-        Deepseek = "",
+        Deepseek = "",
       }
-
       -- Return the corresponding icon or a default icon if not found
       return kind_icons[provider_name] or "󰍩" -- Default icon if provider not found
     end
