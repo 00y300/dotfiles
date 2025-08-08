@@ -1,11 +1,11 @@
 return {
   "milanglacier/minuet-ai.nvim",
   dependencies = {
-    -- "rafamadriz/friendly-snippets",
+    "rafamadriz/friendly-snippets",
   },
   config = function()
     require("minuet").setup({
-      provider = "openai_fim_compatible",
+      provider = "openai_compatible", -- Changed to use MLX
       n_completions = 1, -- recommend for local model for resource saving
       -- I recommend beginning with a small context window size and incrementally
       -- expanding it, depending on your local computing power. A context window
@@ -40,6 +40,27 @@ return {
             end,
             suffix = false,
           },
+        },
+        openai_compatible = {
+          api_key = "TERM",
+          name = "MLX-LM Server",
+          end_point = "http://localhost:8080/v1/chat/completions",
+          model = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
+          -- optional = {
+          --   max_tokens = 56,
+          --   top_p = 0.9,
+          --   temperature = 0.3,
+          -- },
+          -- template = {
+          --   prompt = function(context_before_cursor, context_after_cursor, _)
+          --     return "<|fim_prefix|>"
+          --       .. context_before_cursor
+          --       .. "<|fim_suffix|>"
+          --       .. context_after_cursor
+          --       .. "<|fim_middle|>"
+          --   end,
+          --   suffix = false,
+          -- },
         },
       },
     })

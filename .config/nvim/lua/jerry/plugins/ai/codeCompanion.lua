@@ -3,8 +3,7 @@ return {
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-treesitter/nvim-treesitter",
-    "hrsh7th/nvim-cmp", -- Optional: for completion
-    "nvim-telescope/telescope.nvim", -- Optional: for actions
+    "folke/snacks.nvim",
     {
       "MeanderingProgrammer/render-markdown.nvim", -- Optional: for markdown rendering
       ft = { "markdown", "codecompanion" },
@@ -22,29 +21,124 @@ return {
   },
   config = function()
     require("codecompanion").setup({
-      strategies = {
-        chat = {
-          adapter = "openai",
-        },
-        inline = {
-          adapter = "openai",
-        },
-        agent = {
-          adapter = "openai",
-        },
-      },
+      -- strategies = {
+      --   chat = {
+      --     adapter = "mlx", -- Use our custom MLX adapter
+      --   },
+      --   inline = {
+      --     adapter = "mlx",
+      --   },
+      --   agent = {
+      --     adapter = "mlx",
+      --   },
+      -- },
       adapters = {
-        openai = function()
+        -- Custom MLX-LM adapter following the xAI pattern
+        mlx = function()
+          local openai = require("codecompanion.adapters.openai")
+
+          ---@class MLX.Adapter: CodeCompanion.Adapter
+          return {
+            name = "mlx",
+            formatted_name = "MLX-LM",
+            roles = {
+              llm = "assistant",
+              user = "user",
+            },
+            opts = {
+              stream = true,
+              vision = false,
+            },
+            features = {
+              text = true,
+              tokens = true,
+            },
+            url = "http://localhost:8080/v1/chat/completions", -- Your working endpoint
+            env = {
+              api_key = "DUMMY", -- Not used but required by framework
+            },
+            headers = {
+              ["Content-Type"] = "application/json",
+            },
+            handlers = {
+              setup = function(self)
+                if self.opts and self.opts.stream then
+                  self.parameters.stream = true
+                end
+                return true
+              end,
+              --- Use the OpenAI adapter for the bulk of the work
+              tokens = function(self, data)
+                return openai.handlers.tokens(self, data)
+              end,
+              form_parameters = function(self, params, messages)
+                return openai.handlers.form_parameters(self, params, messages)
+              end,
+              form_messages = function(self, messages)
+                return openai.handlers.form_messages(self, messages)
+              end,
+              chat_output = function(self, data)
+                return openai.handlers.chat_output(self, data)
+              end,
+              inline_output = function(self, data, context)
+                return openai.handlers.inline_output(self, data, context)
+              end,
+              on_exit = function(self, data)
+                return openai.handlers.on_exit(self, data)
+              end,
+            },
+            schema = {
+              ---@type CodeCompanion.Schema
+              model = {
+                order = 1,
+                mapping = "parameters",
+                type = "enum",
+                desc = "MLX model to use for code completion and chat",
+                -- default = "mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit",
+                default = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
+                choices = {
+                  -- "mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit",
+                  "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
+                },
+              },
+              temperature = {
+                order = 2,
+                mapping = "parameters",
+                type = "number",
+                desc = "Sampling temperature",
+                default = 0.7,
+              },
+              top_p = {
+                order = 3,
+                mapping = "parameters",
+                type = "number",
+                desc = "Nucleus sampling probability",
+                default = 0.8,
+              },
+              max_tokens = {
+                order = 4,
+                mapping = "parameters",
+                type = "number",
+                desc = "Maximum tokens to generate",
+                default = 4096,
+                default = null,
+              },
+            },
+          }
+        end,
+
+        -- Backup: Llama.cpp server adapter (your original working setup)
+        llama_cpp = function()
           return require("codecompanion.adapters").extend("openai", {
-            name = "qwen3_coder",
+            name = "qwen3_llamacpp",
             url = "http://localhost:8012/v1/chat/completions",
-            api_key = "dummy", -- Required but not used for local server
+            api_key = "dummy",
             chat = {
               model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
               temperature = 0.7,
               top_p = 0.8,
               top_k = 20,
-              frequency_penalty = 1.05, -- OpenAI API equivalent to repeat_penalty
+              frequency_penalty = 1.05,
               max_tokens = 4096,
             },
             inline = {
@@ -54,24 +148,6 @@ return {
               top_k = 20,
               frequency_penalty = 1.05,
               max_tokens = 2048,
-            },
-          })
-        end,
-        -- Alternative: Direct llama-server adapter (if available)
-        llama = function()
-          return require("codecompanion.adapters").extend("openai", {
-            name = "qwen3_llama",
-            url = "http://localhost:8012/completion",
-            api_key = "", -- No API key for local server
-            headers = {
-              ["Content-Type"] = "application/json",
-            },
-            parameters = {
-              temperature = 0.7,
-              top_p = 0.8,
-              top_k = 20,
-              repeat_penalty = 1.05,
-              n_predict = 4096,
             },
           })
         end,
@@ -101,7 +177,7 @@ return {
       prompt_library = {
         ["Custom Code Review"] = {
           strategy = "chat",
-          description = "Review code with Qwen3 Coder",
+          description = "Review code with Qwen3 Coder via MLX",
           opts = {
             index = 10,
             default_prompt = true,
@@ -125,7 +201,7 @@ return {
         },
         ["Explain Code"] = {
           strategy = "chat",
-          description = "Explain selected code",
+          description = "Explain selected code with MLX",
           opts = {
             index = 11,
           },
@@ -142,6 +218,29 @@ return {
                   .. "\n"
                   .. require("codecompanion.helpers.actions").get_code()
                   .. "\n```"
+              end,
+            },
+          },
+        },
+        ["Optimize Code"] = {
+          strategy = "inline",
+          description = "Optimize selected code for performance",
+          opts = {
+            index = 12,
+          },
+          prompts = {
+            {
+              role = "system",
+              content = "You are an expert at code optimization. Rewrite the provided code to be more efficient, readable, and performant while maintaining the same functionality.",
+            },
+            {
+              role = "user",
+              content = function()
+                return "Optimize this code:\n\n```"
+                  .. vim.bo.filetype
+                  .. "\n"
+                  .. require("codecompanion.helpers.actions").get_code()
+                  .. "\n```\n\nReturn only the optimized code without explanations."
               end,
             },
           },

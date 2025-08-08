@@ -1,10 +1,10 @@
 return {
   "kawre/leetcode.nvim",
   build = ":TSUpdate html",
-  enabled = false,
+  cmd = "Leet",
+  -- enabled = true,
   dependencies = {
-    "nvim-telescope/telescope.nvim",
-    "nvim-lua/plenary.nvim", -- required by telescope
+
     "MunifTanjim/nui.nvim",
 
     -- optional
@@ -15,7 +15,8 @@ return {
   opts = {
     -- configuration goes here
     lang = "python3",
-    image_support = true,
+    image_support = false,
     -- logging = true,
+    -- picker = { provider = "snacks" },
   },
 }
