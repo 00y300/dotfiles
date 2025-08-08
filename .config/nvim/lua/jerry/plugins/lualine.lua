@@ -91,7 +91,7 @@ return {
         lualine_x = {
           {
             require("minuet.lualine"),
-            display_name = "both",
+            display_name = "provider",
             provider_model_separator = "/",
             display_on_idle = true,
             fmt = function(str)
