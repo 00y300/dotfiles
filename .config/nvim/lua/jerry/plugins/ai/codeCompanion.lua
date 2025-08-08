@@ -1,4 +1,5 @@
 return {
+
   "olimorris/codecompanion.nvim",
   dependencies = {
     "nvim-lua/plenary.nvim",
@@ -21,19 +22,44 @@ return {
   },
   config = function()
     require("codecompanion").setup({
-      -- strategies = {
-      --   chat = {
-      --     adapter = "mlx", -- Use our custom MLX adapter
-      --   },
-      --   inline = {
-      --     adapter = "mlx",
-      --   },
-      --   agent = {
-      --     adapter = "mlx",
-      --   },
-      -- },
+      strategies = {
+        chat = {
+          adapter = "llama_cpp", -- Changed to llama_cpp as default
+        },
+        inline = {
+          adapter = "llama_cpp", -- Changed to llama_cpp as default
+        },
+        agent = {
+          adapter = "llama_cpp", -- Changed to llama_cpp as default
+        },
+      },
       adapters = {
-        -- Custom MLX-LM adapter following the xAI pattern
+        -- Primary: Llama.cpp server adapter (now the default)
+        llama_cpp = function()
+          return require("codecompanion.adapters").extend("openai", {
+            name = "qwen3_llamacpp",
+            url = "http://localhost:8012/v1/chat/completions",
+            api_key = "dummy",
+            chat = {
+              model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
+              temperature = 0.7,
+              top_p = 0.8,
+              top_k = 20,
+              frequency_penalty = 1.05,
+              max_tokens = 4096,
+            },
+            inline = {
+              model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
+              temperature = 0.7,
+              top_p = 0.8,
+              top_k = 20,
+              frequency_penalty = 1.05,
+              max_tokens = 2048,
+            },
+          })
+        end,
+
+        -- Alternative: Custom MLX-LM adapter (kept for optional use)
         mlx = function()
           local openai = require("codecompanion.adapters.openai")
 
@@ -121,35 +147,9 @@ return {
                 type = "number",
                 desc = "Maximum tokens to generate",
                 default = 4096,
-                default = null,
               },
             },
           }
-        end,
-
-        -- Backup: Llama.cpp server adapter (your original working setup)
-        llama_cpp = function()
-          return require("codecompanion.adapters").extend("openai", {
-            name = "qwen3_llamacpp",
-            url = "http://localhost:8012/v1/chat/completions",
-            api_key = "dummy",
-            chat = {
-              model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
-              temperature = 0.7,
-              top_p = 0.8,
-              top_k = 20,
-              frequency_penalty = 1.05,
-              max_tokens = 4096,
-            },
-            inline = {
-              model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
-              temperature = 0.7,
-              top_p = 0.8,
-              top_k = 20,
-              frequency_penalty = 1.05,
-              max_tokens = 2048,
-            },
-          })
         end,
       },
       display = {
@@ -177,7 +177,7 @@ return {
       prompt_library = {
         ["Custom Code Review"] = {
           strategy = "chat",
-          description = "Review code with Qwen3 Coder via MLX",
+          description = "Review code with Qwen3 Coder via llama.cpp",
           opts = {
             index = 10,
             default_prompt = true,
@@ -201,7 +201,7 @@ return {
         },
         ["Explain Code"] = {
           strategy = "chat",
-          description = "Explain selected code with MLX",
+          description = "Explain selected code with llama.cpp",
           opts = {
             index = 11,
           },

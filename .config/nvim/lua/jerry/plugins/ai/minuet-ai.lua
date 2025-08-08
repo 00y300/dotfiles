@@ -5,7 +5,7 @@ return {
   },
   config = function()
     require("minuet").setup({
-      provider = "openai_compatible", -- Changed to use MLX
+      provider = "openai_fim_compatible", -- Changed to use llama-cpp as default
       n_completions = 1, -- recommend for local model for resource saving
       -- I recommend beginning with a small context window size and incrementally
       -- expanding it, depending on your local computing power. A context window
@@ -14,6 +14,7 @@ return {
       -- you should adjust the context window to a larger value.
       context_window = 512,
       provider_options = {
+        -- Primary: Llama.cpp server (now the default)
         openai_fim_compatible = {
           -- For Windows users, TERM may not be present in environment variables.
           -- Consider using APPDATA instead.
@@ -41,16 +42,17 @@ return {
             suffix = false,
           },
         },
+        -- Alternative: MLX-LM Server (kept for optional use)
         openai_compatible = {
           api_key = "TERM",
           name = "MLX-LM Server",
           end_point = "http://localhost:8080/v1/chat/completions",
           model = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
-          -- optional = {
-          --   max_tokens = 56,
-          --   top_p = 0.9,
-          --   temperature = 0.3,
-          -- },
+          optional = {
+            max_tokens = 56,
+            top_p = 0.9,
+            temperature = 0.3,
+          },
           template = {
             prompt = function(context_before_cursor, context_after_cursor, _)
               return "<|fim_prefix|>"
