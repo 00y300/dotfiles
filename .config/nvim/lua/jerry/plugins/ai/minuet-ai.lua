@@ -66,5 +66,13 @@ return {
         },
       },
     })
+
+    vim.keymap.set("n", "<leader>apm", function()
+      require("minuet").change_provider("openai_compatible")
+    end, { desc = "Switch to OpenAI Compatible provider" })
+
+    vim.keymap.set("n", "<leader>apl", function()
+      require("minuet").change_provider("openai_fim_compatible")
+    end, { desc = "Switch to OpenAI FIM Compatible provider" })
   end,
 }
