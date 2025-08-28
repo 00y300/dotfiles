@@ -62,6 +62,16 @@ return {
         files = {
           hidden = true,
         },
+        explorer = {
+          win = {
+            list = {
+              wo = {
+                number = true,
+                relativenumber = true,
+              },
+            },
+          },
+        },
         buffers = {
           hidden = true,
           win = {
