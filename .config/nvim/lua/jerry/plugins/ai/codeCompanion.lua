@@ -1,3 +1,5 @@
+-- CodeCompanion configuration for AI-powered coding assistance
+-- Updated for adapters.http namespace (v18+) using extend("openai")
 return {
   "olimorris/codecompanion.nvim",
   dependencies = {
@@ -5,7 +7,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     "folke/snacks.nvim",
     {
-      "MeanderingProgrammer/render-markdown.nvim", -- Optional: for markdown rendering
+      "MeanderingProgrammer/render-markdown.nvim",
       ft = { "markdown", "codecompanion" },
     },
     {
@@ -13,85 +15,36 @@ return {
       config = function()
         local diff = require("mini.diff")
         diff.setup({
-          -- Disabled by default
           source = diff.gen_source.none(),
         })
       end,
     },
   },
   config = function()
+    local adapters = require("codecompanion.adapters")
+
     require("codecompanion").setup({
       strategies = {
-        chat = {
-          adapter = "mlx", -- Use MLX as default
-          -- adapter = "llama_cpp"
-        },
-        inline = {
-          adapter = "mlx",
-          -- adapter = "llama_cpp"
-        },
-        agent = {
-          adapter = "mlx",
-          -- adapter = "llama_cpp"
-        },
+        chat = { adapter = "mlx" },
+        inline = { adapter = "mlx" },
+        agent = { adapter = "mlx" },
       },
       adapters = {
-        -- Custom MLX-LM adapter following the xAI pattern
-        mlx = function()
-          local openai = require("codecompanion.adapters.openai")
-
-          ---@class MLX.Adapter: CodeCompanion.Adapter
-          return {
+        http = {
+          -- MLX adapter built using extend("openai")
+          mlx = adapters.extend("openai", {
             name = "mlx",
             formatted_name = "MLX-LM",
-            roles = {
-              llm = "assistant",
-              user = "user",
-            },
+            url = "http://localhost:8080/v1/chat/completions",
+            api_key = "DUMMY",
+            headers = { ["Content-Type"] = "application/json" },
             opts = {
               stream = true,
               vision = false,
             },
-            features = {
-              text = true,
-              tokens = true,
-            },
-            url = "http://localhost:8080/v1/chat/completions", -- Your working endpoint
-            env = {
-              api_key = "DUMMY", -- Not used but required by framework
-            },
-            headers = {
-              ["Content-Type"] = "application/json",
-            },
-            handlers = {
-              setup = function(self)
-                if self.opts and self.opts.stream then
-                  self.parameters.stream = true
-                end
-                return true
-              end,
-              --- Use the OpenAI adapter for the bulk of the work
-              tokens = function(self, data)
-                return openai.handlers.tokens(self, data)
-              end,
-              form_parameters = function(self, params, messages)
-                return openai.handlers.form_parameters(self, params, messages)
-              end,
-              form_messages = function(self, messages)
-                return openai.handlers.form_messages(self, messages)
-              end,
-              chat_output = function(self, data)
-                return openai.handlers.chat_output(self, data)
-              end,
-              inline_output = function(self, data, context)
-                return openai.handlers.inline_output(self, data, context)
-              end,
-              on_exit = function(self, data)
-                return openai.handlers.on_exit(self, data)
-              end,
-            },
+            features = { text = true, tokens = true },
+            roles = { llm = "assistant", user = "user" },
             schema = {
-              ---@type CodeCompanion.Schema
               model = {
                 order = 1,
                 mapping = "parameters",
@@ -125,12 +78,10 @@ return {
                 default = 4096,
               },
             },
-          }
-        end,
+          }),
 
-        -- Backup: Llama.cpp server adapter (your original working setup)
-        llama_cpp = function()
-          return require("codecompanion.adapters").extend("openai", {
+          -- Llama.cpp adapter built using extend("openai")
+          llama_cpp = adapters.extend("openai", {
             name = "qwen3_llamacpp",
             url = "http://localhost:8012/v1/chat/completions",
             api_key = "dummy",
@@ -150,17 +101,22 @@ return {
               frequency_penalty = 1.05,
               max_tokens = 2048,
             },
-          })
-        end,
+          }),
+
+          -- Global options moved under adapters.http.opts
+          opts = {
+            log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
+            send_code = true,
+            use_default_actions = true,
+            use_default_prompts = true,
+          },
+        },
       },
       display = {
-        action_palette = {
-          width = 95,
-          height = 10,
-        },
+        action_palette = { width = 95, height = 10 },
         chat = {
           window = {
-            layout = "vertical", -- vertical|horizontal|buffer
+            layout = "vertical",
             border = "single",
             height = 0.8,
             width = 0.45,
@@ -169,20 +125,11 @@ return {
           show_settings = true,
         },
       },
-      opts = {
-        log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
-        send_code = true, -- Send code to the model
-        use_default_actions = true, -- Use default actions
-        use_default_prompts = true, -- Use default prompts
-      },
       prompt_library = {
         ["Custom Code Review"] = {
           strategy = "chat",
           description = "Review code with Qwen3 Coder via MLX",
-          opts = {
-            index = 10,
-            default_prompt = true,
-          },
+          opts = { index = 10, default_prompt = true },
           prompts = {
             {
               role = "system",
@@ -203,9 +150,7 @@ return {
         ["Explain Code"] = {
           strategy = "chat",
           description = "Explain selected code with MLX",
-          opts = {
-            index = 11,
-          },
+          opts = { index = 11 },
           prompts = {
             {
               role = "system",
@@ -226,9 +171,7 @@ return {
         ["Optimize Code"] = {
           strategy = "inline",
           description = "Optimize selected code for performance",
-          opts = {
-            index = 12,
-          },
+          opts = { index = 12 },
           prompts = {
             {
               role = "system",
