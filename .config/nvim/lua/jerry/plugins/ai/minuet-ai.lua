@@ -3,44 +3,29 @@ return {
   dependencies = { "rafamadriz/friendly-snippets" },
   config = function()
     require("minuet").setup({
-      provider = "openai_fim_compatible",
+      provider = "openai_fim_compatible", -- Default provider
+      -- provider = "openai_compatible",
       n_completions = 1,
       context_window = 512,
       provider_options = {
+        -- Primary: Llama.cpp server (default)
         openai_fim_compatible = {
-          api_key = "TERM",
-          name = "MLX (FIM)",
-          end_point = "http://localhost:8080/v1/completions",
-          model = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
-          stream = true,
-          -- IMPORTANT: tell the model to *only* continue code
-          system = "Continue the code from the cursor. Output ONLY the code continuation with no backticks, no language fences, no preamble, no comments, no explanations.",
-          few_shots = nil,
-          chat_input = nil,
+          api_key = "TERM", -- Or APPDATA for Windows
+          name = "Llama.cpp",
+          end_point = "http://localhost:8012/v1/completions",
+          model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL.gguf",
           optional = {
-            stop = { "<|endoftext|>", "\n\n", "\nimport ", "\nfrom " },
-            max_tokens = 64,
+            max_tokens = 56,
             top_p = 0.9,
-            temperature = 0.0,
-          },
-          system = "Continue this code exactly where the cursor is. Do not repeat imports or existing lines. Only write the next logical lines of code.",
-          template = {
-            prompt = function(before, after, _)
-              return "<|fim_prefix|>" .. before .. "<|fim_suffix|>" .. after .. "<|fim_middle|>"
-            end,
-            suffix = false,
           },
           template = {
-            -- classic FIM: prefix/suffix/middle
             prompt = function(before, after, _)
               return "<|fim_prefix|>" .. before .. "<|fim_suffix|>" .. after .. "<|fim_middle|>"
             end,
             suffix = false,
           },
         },
-
-        -- If your MLX build has /v1/chat/completions working, you can switch to it for
-        -- chat-style editing (usually reduces weird token leaks). Keep FIM as default.
+        -- Alternative: MLX-LM server
         openai_compatible = {
           api_key = "TERM",
           name = "MLX (Chat)",
@@ -48,8 +33,6 @@ return {
           model = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
           stream = true,
           system = "You are a code completion engine. Return ONLY the code continuation. Do not include backticks or fences.",
-          few_shots = nil,
-          chat_input = nil,
           optional = {
             stop = { "<|endoftext|>", "```", "\n```", "\r\n```" },
             max_tokens = 96,
@@ -72,6 +55,7 @@ return {
       },
     })
 
+    -- Keymaps
     vim.keymap.set("n", "<leader>amf", function()
       require("minuet").change_provider("openai_fim_compatible")
     end, { desc = "Minuet → MLX FIM (/v1/completions)" })
