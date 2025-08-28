@@ -26,13 +26,13 @@ return {
           },
         },
         -- Alternative: MLX-LM server
+
         openai_compatible = {
           api_key = "TERM",
           name = "MLX (Chat)",
           end_point = "http://localhost:8080/v1/chat/completions",
           model = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
           stream = true,
-          system = "You are a code completion engine. Return ONLY the code continuation. Do not include backticks or fences.",
           optional = {
             stop = { "<|endoftext|>", "```", "\n```", "\r\n```" },
             max_tokens = 96,
@@ -46,7 +46,10 @@ return {
                   role = "system",
                   content = "You are a code completion engine. Return ONLY the code continuation. Do not include backticks or fences.",
                 },
-                { role = "user", content = before .. after },
+                {
+                  role = "user",
+                  content = before .. after,
+                },
               }
             end,
             suffix = false,
