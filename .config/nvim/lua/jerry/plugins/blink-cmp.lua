@@ -99,7 +99,8 @@ return {
     },
 
     sources = {
-      default = { "lsp", "path", "snippets", "buffer", "minuet" },
+      -- default = { "lsp", "path", "snippets", "buffer", "minuet" },
+      default = { "lsp", "path", "snippets", "buffer" },
       per_filetype = {
         sql = { "snippets", "dadbod", "buffer" },
       },

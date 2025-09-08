@@ -28,6 +28,7 @@ return {
         java = { "clang-format" },
         go = { "goimports", "gofumpt" },
         nix = { "nixfmt" },
+        rust = { "rustfmt", lsp_format = "fallback" },
         json = { "jq" },
       },
       formatters = {

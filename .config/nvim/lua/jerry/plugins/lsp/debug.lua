@@ -95,24 +95,26 @@ return {
         })
       end
 
-      -- Get C++ debug adapter path from Nix
-      local function get_cpp_debug_adapter_path()
-        local ok, cpp_debug_path = pcall(
+      -- Setup codelldb from Nix
+      local function get_codelldb_adapter()
+        local ok, lldb_path = pcall(
           vim.fn.trim,
-          vim.fn.system(
-            "NIXPKGS_ALLOW_UNFREE=1 nix eval --impure --raw nixpkgs#vscode-extensions.ms-vscode.cpptools.outPath 2>/dev/null"
-          )
+          vim.fn.system("nix eval --raw nixpkgs#vscode-extensions.vadimcn.vscode-lldb.outPath 2>/dev/null")
         )
 
-        if ok and cpp_debug_path ~= "" then
-          local full_path = cpp_debug_path
-            .. "/share/vscode/extensions/ms-vscode.cpptools/debugAdapters/bin/OpenDebugAD7"
-          -- Verify the binary exists
-          if vim.fn.executable(full_path) == 1 then
-            return full_path
+        if ok and lldb_path ~= "" then
+          local adapter = lldb_path .. "/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb"
+          if vim.fn.executable(adapter) == 1 then
+            return {
+              type = "server",
+              port = "${port}",
+              executable = {
+                command = adapter,
+                args = { "--port", "${port}" },
+              },
+            }
           end
         end
-
         return nil
       end
 
@@ -248,83 +250,30 @@ return {
       local function get_cpp_configs()
         local configs = {}
 
-        -- Add cppdbg configurations if available
-        local cpp_debug_path = get_cpp_debug_adapter_path()
-        if cpp_debug_path then
-          -- Setup cppdbg adapter
-          dap.adapters.cppdbg = {
-            id = "cppdbg",
-            type = "executable",
-            command = cpp_debug_path,
-          }
-
+        -- Add codelldb configurations if available
+        local codelldb = get_codelldb_adapter()
+        if codelldb then
+          dap.adapters.codelldb = codelldb
           local cpp_configs = {
             {
-              name = "Launch (cppdbg)",
-              type = "cppdbg",
+              name = "Launch (codelldb)",
+              type = "codelldb",
               request = "launch",
               program = function()
                 return vim.fn.input("Path to executable: ", cwd .. "/", "file")
               end,
               cwd = "${workspaceFolder}",
-              stopAtEntry = false,
-              setupCommands = {
-                {
-                  text = "-enable-pretty-printing",
-                  description = "enable pretty printing",
-                  ignoreFailures = false,
-                },
-                {
-                  text = "-gdb-set print object on",
-                  description = "enable object printing",
-                  ignoreFailures = true,
-                },
-                {
-                  text = "-gdb-set print static-members on",
-                  description = "enable static member printing",
-                  ignoreFailures = true,
-                },
-                {
-                  text = "-gdb-set print vtbl on",
-                  description = "enable vtable printing",
-                  ignoreFailures = true,
-                },
-                {
-                  text = "-gdb-set print demangle on",
-                  description = "enable symbol demangling",
-                  ignoreFailures = true,
-                },
-                {
-                  text = "-gdb-set print sevenbit-strings off",
-                  description = "enable non-ASCII character printing",
-                  ignoreFailures = true,
-                },
-                {
-                  text = "-gdb-set charset UTF-8",
-                  description = "set charset to UTF-8",
-                  ignoreFailures = true,
-                },
-                {
-                  text = "-gdb-set auto-solib-add on",
-                  description = "automatically load shared library symbols",
-                  ignoreFailures = true,
-                },
-              },
+              stopOnEntry = false,
+              args = {},
             },
             {
-              name = "Attach to process (cppdbg)",
-              type = "cppdbg",
+              name = "Attach to process (codelldb)",
+              type = "codelldb",
               request = "attach",
-              program = function()
-                return vim.fn.input("Path to executable: ", cwd .. "/", "file")
-              end,
-              processId = function()
-                return require("dap.utils").pick_process()
-              end,
+              pid = require("dap.utils").pick_process,
               cwd = "${workspaceFolder}",
             },
           }
-
           configs = vim.list_extend(configs, cpp_configs)
         end
 
@@ -365,8 +314,8 @@ return {
 
             local cpp_configs = get_cpp_configs()
             dap.configurations.cpp = cpp_configs
-            dap.configurations.c = dap.configurations.cpp
-            dap.configurations.rust = dap.configurations.cpp
+            dap.configurations.c = cpp_configs
+            dap.configurations.rust = cpp_configs
           end
         end
       end
