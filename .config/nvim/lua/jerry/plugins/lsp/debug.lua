@@ -5,13 +5,6 @@ return {
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "leoluz/nvim-dap-go",
-      "mxsdev/nvim-dap-vscode-js",
-      {
-        "microsoft/vscode-js-debug",
-        version = "1.*",
-        build = "npm i && npm run compile vsDebugServerBundle && mv dist out",
-        lazy = true,
-      },
       {
         "theHamsta/nvim-dap-virtual-text",
         lazy = true,
@@ -73,11 +66,9 @@ return {
     config = function()
       local dap = require("dap")
 
-      -- Cache expensive operations
       local cwd = vim.fn.getcwd()
-      local data_path = vim.fn.stdpath("data")
 
-      -- Setup signs efficiently
+      -- Signs
       local icons = {
         Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
         Breakpoint = { "", "DiagnosticInfo" },
@@ -85,7 +76,6 @@ return {
         BreakpointCondition = { "", "DiagnosticInfo" },
         LogPoint = { ".>", "DiagnosticInfo" },
       }
-
       for name, sign in pairs(icons) do
         vim.fn.sign_define("Dap" .. name, {
           text = sign[1],
@@ -95,13 +85,12 @@ return {
         })
       end
 
-      -- Setup codelldb from Nix
+      -- Codelldb (Nix)
       local function get_codelldb_adapter()
         local ok, lldb_path = pcall(
           vim.fn.trim,
           vim.fn.system("nix eval --raw nixpkgs#vscode-extensions.vadimcn.vscode-lldb.outPath 2>/dev/null")
         )
-
         if ok and lldb_path ~= "" then
           local adapter = lldb_path .. "/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb"
           if vim.fn.executable(adapter) == 1 then
@@ -118,14 +107,7 @@ return {
         return nil
       end
 
-      -- Lazy setup for language-specific configurations
-      local function setup_js_debug()
-        require("dap-vscode-js").setup({
-          debugger_path = data_path .. "/lazy/vscode-js-debug",
-          adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost", "firefox" },
-        })
-      end
-
+      -- Firefox adapter (Nix)
       local function setup_firefox_adapter()
         local ok, firefox_path = pcall(
           vim.fn.trim,
@@ -133,7 +115,6 @@ return {
             "nix eval --raw nixpkgs#vscode-extensions.firefox-devtools.vscode-firefox-debug.outPath 2>/dev/null"
           )
         )
-
         if ok and firefox_path ~= "" then
           dap.adapters.firefox = {
             type = "executable",
@@ -155,13 +136,47 @@ return {
         end)
       end
 
-      -- Language-specific configuration functions
-      local function get_js_configs()
-        local configs = {
+      -- JS/TS debug adapters (Node + Chrome + Firefox)
+      local function setup_js_adapters()
+        local ok, js_debug_path =
+          pcall(vim.fn.trim, vim.fn.system("nix eval --raw nixpkgs#vscode-js-debug 2>/dev/null"))
+        if not ok or js_debug_path == "" then
+          vim.notify("vscode-js-debug not found via nix", vim.log.levels.ERROR)
+          return
+        end
+
+        -- Node
+        dap.adapters["pwa-node"] = {
+          type = "server",
+          host = "localhost",
+          port = "${port}",
+          executable = {
+            command = "node",
+            args = {
+              js_debug_path .. "/lib/node_modules/js-debug/dist/src/dapDebugServer.js",
+              "${port}",
+            },
+          },
+        }
+
+        -- Chrome
+        dap.adapters["pwa-chrome"] = dap.adapters["pwa-node"]
+
+        setup_firefox_adapter()
+
+        local js_configs = {
+          {
+            type = "pwa-node",
+            request = "launch",
+            name = "Debug current JS/TS file (Node)",
+            program = "${file}",
+            cwd = "${workspaceFolder}",
+            console = "integratedTerminal",
+          },
           {
             type = "pwa-chrome",
             request = "launch",
-            name = "Launch & Debug Chrome ",
+            name = "Launch Chrome to debug ",
             url = function()
               return prompt_url("http://localhost:3000")
             end,
@@ -172,9 +187,8 @@ return {
           },
         }
 
-        -- Only add Firefox config if adapter is available
         if dap.adapters.firefox then
-          table.insert(configs, 1, {
+          table.insert(js_configs, {
             type = "firefox",
             name = "Launch Firefox to debug 󰈹",
             request = "launch",
@@ -187,9 +201,14 @@ return {
           })
         end
 
-        return configs
+        dap.configurations.javascript = js_configs
+        dap.configurations.typescript = js_configs
+        dap.configurations.javascriptreact = js_configs
+        dap.configurations.typescriptreact = js_configs
+        dap.configurations.vue = js_configs
       end
 
+      -- Go configs
       local function get_go_configs()
         return {
           {
@@ -208,6 +227,7 @@ return {
         }
       end
 
+      -- GDB configs
       local function get_gdb_configs()
         return {
           {
@@ -247,10 +267,9 @@ return {
         }
       end
 
+      -- C/C++ configs
       local function get_cpp_configs()
         local configs = {}
-
-        -- Add codelldb configurations if available
         local codelldb = get_codelldb_adapter()
         if codelldb then
           dap.adapters.codelldb = codelldb
@@ -276,26 +295,17 @@ return {
           }
           configs = vim.list_extend(configs, cpp_configs)
         end
-
-        -- Add GDB configurations as fallback
         local gdb_configs = get_gdb_configs()
         configs = vim.list_extend(configs, gdb_configs)
-
         return configs
       end
 
-      -- Lazy configuration setup based on filetype
+      -- Lazy setup
       local function setup_language_configs()
         local ft = vim.bo.filetype
-
         if vim.tbl_contains({ "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" }, ft) then
           if not dap.configurations[ft] then
-            setup_js_debug()
-            setup_firefox_adapter()
-            local js_configs = get_js_configs()
-            for _, lang in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" }) do
-              dap.configurations[lang] = js_configs
-            end
+            setup_js_adapters()
           end
         elseif ft == "go" then
           if not dap.configurations.go then
@@ -303,7 +313,6 @@ return {
           end
         elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
           if not dap.configurations.cpp then
-            -- Setup GDB adapter
             if not dap.adapters.gdb then
               dap.adapters.gdb = {
                 type = "executable",
@@ -311,7 +320,6 @@ return {
                 args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
               }
             end
-
             local cpp_configs = get_cpp_configs()
             dap.configurations.cpp = cpp_configs
             dap.configurations.c = cpp_configs
@@ -320,19 +328,18 @@ return {
         end
       end
 
-      -- Setup language configs on first debug command
+      -- Hook first debug command
       local original_continue = dap.continue
       dap.continue = function()
         setup_language_configs()
-        dap.continue = original_continue -- Restore original function
+        dap.continue = original_continue
         return dap.continue()
       end
 
-      -- Setup UI and Go plugin
+      -- UI + Go setup
       require("dapui").setup()
       require("dap-go").setup()
 
-      -- UI event handlers
       local dapui = require("dapui")
       dap.listeners.after.event_initialized["dapui_config"] = dapui.open
       dap.listeners.before.event_terminated["dapui_config"] = function()

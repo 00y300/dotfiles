@@ -17,9 +17,9 @@ return {
     vim.diagnostic.config({
       signs = {
         text = {
-          [vim.diagnostic.severity.ERROR] = " ",
-          [vim.diagnostic.severity.WARN] = " ",
-          [vim.diagnostic.severity.INFO] = " ",
+          [vim.diagnostic.severity.ERROR] = " ",
+          [vim.diagnostic.severity.WARN] = " ",
+          [vim.diagnostic.severity.INFO] = " ",
           [vim.diagnostic.severity.HINT] = "󰠠 ",
         },
       },
@@ -106,7 +106,12 @@ return {
     })
 
     -- TypeScript/JavaScript language server
-    vim.lsp.enable("ts_ls", {
+
+    --[[ vim.lsp.enable("ts_ls", {
+      capabilities = capabilities,
+    }) ]]
+    local lspconfig = require("lspconfig")
+    lspconfig.ts_ls.setup({
       capabilities = capabilities,
     })
 
