@@ -115,14 +115,20 @@ return {
             "nix eval --raw nixpkgs#vscode-extensions.firefox-devtools.vscode-firefox-debug.outPath 2>/dev/null"
           )
         )
+
         if ok and firefox_path ~= "" then
-          dap.adapters.firefox = {
-            type = "executable",
-            command = "node",
-            args = {
-              firefox_path .. "/share/vscode/extensions/firefox-devtools.vscode-firefox-debug/dist/adapter.bundle.js",
-            },
-          }
+          local adapter_js = firefox_path
+            .. "/share/vscode/extensions/firefox-devtools.vscode-firefox-debug/dist/adapter.bundle.js"
+
+          if vim.fn.filereadable(adapter_js) == 1 then
+            require("dap").adapters.firefox = {
+              type = "executable",
+              command = "node",
+              args = { adapter_js },
+            }
+          else
+            vim.notify("Firefox adapter not found at: " .. adapter_js, vim.log.levels.ERROR)
+          end
         end
       end
 
@@ -194,9 +200,10 @@ return {
             request = "launch",
             reAttach = true,
             url = function()
-              return prompt_url("http://localhost:3000")
+              return vim.fn.input("Enter URL: ", "http://localhost:3000")
             end,
             webRoot = cwd,
+            -- webRoot = "${workspaceFolder}/express", -- <== adjust this
             firefoxExecutable = vim.fn.trim(vim.fn.system("readlink -e $(which firefox) 2>/dev/null || echo ''")),
           })
         end
