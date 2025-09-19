@@ -107,14 +107,7 @@ return {
 
     -- TypeScript/JavaScript language server
 
-    --[[ vim.lsp.enable("ts_ls", {
-      capabilities = capabilities,
-    }) ]]
-    local lspconfig = require("lspconfig")
-    lspconfig.ts_ls.setup({
-      capabilities = capabilities,
-    })
-
+    vim.lsp.enable("ts_ls")
     -- Harper language server for markdown (ONLY for .md files)
     vim.lsp.enable("harper_ls")
     vim.lsp.config("harper_ls", {

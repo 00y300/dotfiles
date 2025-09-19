@@ -1,5 +1,6 @@
 return {
   "luckasRanarison/tailwind-tools.nvim",
+  enabled = false,
   event = "VeryLazy",
   name = "tailwind-tools",
   build = ":UpdateRemotePlugins",
