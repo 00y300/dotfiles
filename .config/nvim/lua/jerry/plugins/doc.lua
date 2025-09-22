@@ -1,6 +1,7 @@
 return {
   "fredrikaverpil/godoc.nvim",
   version = "*",
+  enabled = false,
   dependencies = {
     { "nvim-telescope/telescope.nvim" }, -- optional
     {

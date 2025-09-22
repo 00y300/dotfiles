@@ -1,5 +1,5 @@
+-- LLM Provider icons
 local kind_icons = {
-  -- LLM Provider icons
   claude = "󰋦",
   openai = "󱢆",
   codestral = "󱎥",
@@ -30,10 +30,12 @@ local source_icons = {
   -- FALLBACK
   fallback = "󰜚",
 }
+
 return {
   "saghen/blink.cmp",
   dependencies = {
     "rafamadriz/friendly-snippets",
+    "brenoprata10/nvim-highlight-colors", -- Add nvim-highlight-colors dependency
   },
   version = "1.*",
   opts = {
@@ -60,7 +62,6 @@ return {
         end,
       },
     },
-
     signature = { enabled = true },
 
     completion = {
@@ -81,7 +82,7 @@ return {
             kind_icon = {
               text = function(ctx)
                 if require("blink.cmp.sources.lsp.hacks.tailwind").get_hex_color(ctx.item) then
-                  return "󱓻"
+                  return "󱓻 "
                 end
                 return ctx.kind_icon .. ctx.icon_gap
               end,
@@ -111,7 +112,7 @@ return {
           module = "minuet.blink",
           async = true,
           timeout_ms = 3000,
-          score_offset = 100, -- Gives minuet higher priority among suggestions
+          score_offset = 100,
         },
       },
     },
@@ -119,4 +120,24 @@ return {
     fuzzy = { implementation = "prefer_rust_with_warning" },
   },
   opts_extend = { "sources.default" },
+
+  config = function(_, opts)
+    require("blink.cmp").setup(opts)
+
+    -- nvim-highlight-colors setup
+    require("nvim-highlight-colors").setup({
+      render = "virtual",
+      virtual_symbol = "󱓻",
+      virtual_symbol_position = "inline",
+      enable_hex = true,
+      enable_short_hex = true,
+      enable_rgb = true,
+      enable_hsl = true,
+      enable_ansi = true,
+      enable_hsl_without_function = true,
+      enable_var_usage = true,
+      enable_named_colors = true,
+      enable_tailwind = true,
+    })
+  end,
 }
