@@ -45,7 +45,7 @@ return {
     })
 
     telescope.load_extension("fzf")
-    telescope.load_extension("git_worktree") -- Load extension here
+    -- telescope.load_extension("git_worktree") -- Load extension here
 
     -- Key mappings
     local keymap = vim.keymap

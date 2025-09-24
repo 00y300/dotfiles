@@ -3,97 +3,101 @@ return {
   priority = 1000,
   lazy = false,
   ---@type snacks.Config
-  opts = {
-    bigfile = { enabled = true },
-    dashboard = { enabled = false },
-    explorer = { enabled = true },
-    indent = { enabled = true },
-    image = {
-      enabled = true,
-      formats = {
-        "png",
-        "jpg",
-        "jpeg",
-        "gif",
-        "bmp",
-        "webp",
-        "tiff",
-        "heic",
-        "avif",
-        "mp4",
-        "mov",
-        "avi",
-        "mkv",
-        "webm",
-        -- "pdf",
-      },
-      doc = {
-        -- enable image viewer for documents
-        -- a treesitter parser must be available for the enabled languages.
+  config = function()
+    local snacks = require("snacks")
+
+    snacks.setup({
+      bigfile = { enabled = true },
+      dashboard = { enabled = false },
+      explorer = { enabled = true },
+      indent = { enabled = true },
+      image = {
         enabled = true,
-        -- render the image inline in the buffer
-        -- if your env doesn't support unicode placeholders, this will be disabled
-        -- takes precedence over `opts.float` on supported terminals
-        inline = true,
-        -- render the image in a floating window
-        -- only used if `opts.inline` is disabled
-        float = false,
-        max_width = 80,
-        max_height = 40,
-        -- Set to `true`, to conceal the image text when rendering inline.
-        -- (experimental)
-        ---@param lang string tree-sitter language
-        ---@param type snacks.image.Type image type
-        conceal = function(lang, type)
-          -- only conceal math expressions
-          return type == "math"
-        end,
-      },
-      img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments" },
-    },
-    input = { enabled = true },
-    notifier = {
-      enabled = true,
-      timeout = 3000,
-    },
-    picker = {
-      enabled = true,
-      sources = {
-        files = {
-          hidden = true,
+        formats = {
+          "png",
+          "jpg",
+          "jpeg",
+          "gif",
+          "bmp",
+          "webp",
+          "tiff",
+          "heic",
+          "avif",
+          "mp4",
+          "mov",
+          "avi",
+          "mkv",
+          "webm",
+          -- "pdf",
         },
-        explorer = {
-          win = {
-            list = {
-              wo = {
-                number = true,
-                relativenumber = true,
+        doc = {
+          -- enable image viewer for documents
+          -- a treesitter parser must be available for the enabled languages.
+          enabled = true,
+          -- render the image inline in the buffer
+          -- if your env doesn't support unicode placeholders, this will be disabled
+          -- takes precedence over `opts.float` on supported terminals
+          inline = true,
+          -- render the image in a floating window
+          -- only used if `opts.inline` is disabled
+          float = false,
+          max_width = 80,
+          max_height = 40,
+          -- Set to `true`, to conceal the image text when rendering inline.
+          -- (experimental)
+          ---@param lang string tree-sitter language
+          ---@param type snacks.image.Type image type
+          conceal = function(lang, type)
+            -- only conceal math expressions
+            return type == "math"
+          end,
+        },
+        img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments" },
+      },
+      input = { enabled = true },
+      notifier = {
+        enabled = true,
+        timeout = 3000,
+      },
+      picker = {
+        enabled = true,
+        sources = {
+          files = {
+            hidden = true,
+          },
+          explorer = {
+            win = {
+              list = {
+                wo = {
+                  number = true,
+                  relativenumber = true,
+                },
+              },
+            },
+          },
+          buffers = {
+            hidden = true,
+            win = {
+              input = {
+                keys = {
+                  ["<c-d>"] = { "bufdelete", mode = { "n", "i" } },
+                },
               },
             },
           },
         },
-        buffers = {
-          hidden = true,
-          win = {
-            input = {
-              keys = {
-                ["<c-d>"] = { "bufdelete", mode = { "n", "i" } },
-              },
-            },
-          },
+      },
+      quickfile = { enabled = true },
+      scope = { enabled = true },
+      statuscolumn = { enabled = true },
+      words = { enabled = true },
+      styles = {
+        notification = {
+          -- wo = { wrap = true } -- Wrap notifications
         },
       },
-    },
-    quickfile = { enabled = true },
-    scope = { enabled = true },
-    statuscolumn = { enabled = true },
-    words = { enabled = true },
-    styles = {
-      notification = {
-        -- wo = { wrap = true } -- Wrap notifications
-      },
-    },
-  },
+    })
+  end,
   keys = {
     -- Top Pickers & Explorer
     {
@@ -234,6 +238,108 @@ return {
         Snacks.picker.git_log_file()
       end,
       desc = "Git Log File",
+    },
+    -- Add the git files using custom function
+    {
+      "<leader>gF",
+      function()
+        local snacks = require("snacks")
+        snacks.picker.git_files({
+          cwd = vim.env.GIT_WORK_TREE or snacks.git.get_root(),
+        })
+      end,
+      desc = "Git Files",
+    },
+    -- Pick and switch to a git worktree
+    {
+      "<leader>gw",
+      function()
+        -- Get list of worktrees using git command
+        local output = vim.fn.system("git worktree list")
+        if vim.v.shell_error ~= 0 then
+          print("Error: Not in a git repository or no worktrees found")
+          return
+        end
+
+        local worktrees = {}
+        for line in output:gmatch("[^\r\n]+") do
+          if line and line ~= "" then
+            -- Parse each line: /path/to/worktree  branch_name  [commit_hash]
+            local path = line:match("^([^%s]+)")
+            if path then
+              table.insert(worktrees, {
+                path = path,
+                display = line,
+              })
+            end
+          end
+        end
+
+        if #worktrees == 0 then
+          print("No git worktrees found")
+          return
+        end
+
+        -- Get current directory for comparison
+        local prev_path = vim.fn.getcwd()
+
+        -- Use vim.ui.select as a fallback
+        local items = {}
+        for _, wt in ipairs(worktrees) do
+          table.insert(items, wt.display)
+        end
+
+        vim.ui.select(items, {
+          prompt = "Select Git Worktree:",
+        }, function(choice, idx)
+          if choice and idx then
+            local selected = worktrees[idx]
+            local new_path = selected.path
+
+            -- Don't switch if already in the selected worktree
+            if new_path == prev_path then
+              print("Already in worktree: " .. new_path)
+              return
+            end
+
+            -- Change directory
+            vim.cmd("cd " .. vim.fn.fnameescape(new_path))
+
+            -- Hook: Notify about the switch
+            vim.notify("Moved from " .. prev_path .. " to " .. new_path)
+
+            -- Hook: Update current buffer (similar to git-worktree's update_current_buffer_on_switch)
+            local current_buf = vim.api.nvim_get_current_buf()
+            local current_file = vim.api.nvim_buf_get_name(current_buf)
+
+            if current_file and current_file ~= "" then
+              -- Try to find equivalent file in new worktree
+              local relative_path = current_file:gsub("^" .. vim.pesc(prev_path), "")
+              local new_file_path = new_path .. relative_path
+
+              -- Check if the file exists in the new worktree
+              if vim.fn.filereadable(new_file_path) == 1 then
+                vim.cmd("edit " .. vim.fn.fnameescape(new_file_path))
+              else
+                -- File doesn't exist in new worktree, just close current buffer
+                -- and let user navigate to files in new worktree
+                vim.cmd("enew")
+              end
+            end
+
+            -- Hook: Refresh file explorer if available
+            --[[ if vim.fn.exists(":NvimTreeRefresh") == 2 then
+              vim.cmd("NvimTreeRefresh")
+            end ]]
+
+            -- Hook: Update any other buffers/windows as needed
+            -- You can add more custom logic here
+
+            print("Switched to worktree: " .. new_path)
+          end
+        end)
+      end,
+      desc = "Switch Git Worktree",
     },
     -- Grep
     {
