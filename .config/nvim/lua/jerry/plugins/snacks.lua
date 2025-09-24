@@ -341,6 +341,221 @@ return {
       end,
       desc = "Switch Git Worktree",
     },
+    -- Add Git Worktree
+    {
+      "<leader>gwa",
+      function()
+        -- Get list of worktrees using git command
+        local output = vim.fn.system("git worktree list")
+        if vim.v.shell_error ~= 0 then
+          vim.notify("Error: Not in a git repository or no worktrees found", vim.log.levels.ERROR)
+          return
+        end
+
+        -- Check if we're in a git repository
+        local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+        if vim.v.shell_error ~= 0 then
+          vim.notify("Error: Not in a git repository", vim.log.levels.ERROR)
+          return
+        end
+
+        -- Get available branches (local and remote)
+        local branches_output = vim.fn.system("git branch -a --format='%(refname:short)'")
+        if vim.v.shell_error ~= 0 then
+          vim.notify("Error: Failed to get git branches", vim.log.levels.ERROR)
+          return
+        end
+
+        local branches = {}
+        for line in branches_output:gmatch("[^\r\n]+") do
+          if line and line ~= "" and not line:match("HEAD") then
+            -- Clean up remote branch names
+            local branch = line:gsub("^origin/", "")
+            if not vim.tbl_contains(branches, branch) then
+              table.insert(branches, branch)
+            end
+          end
+        end
+
+        -- Add option to create new branch
+        table.insert(branches, 1, "[Create new branch]")
+
+        vim.ui.select(branches, {
+          prompt = "Select branch for new worktree:",
+        }, function(choice)
+          if not choice then
+            return
+          end
+
+          local branch_name = choice
+          local is_new_branch = choice == "[Create new branch]"
+
+          if is_new_branch then
+            vim.ui.input({
+              prompt = "New branch name: ",
+            }, function(input)
+              if not input or input == "" then
+                return
+              end
+              branch_name = input
+              -- Default path suggestion
+              local default_path = vim.fn.expand("~") .. "/worktrees/" .. branch_name
+
+              vim.ui.input({
+                prompt = "Worktree path: ",
+                default = default_path,
+              }, function(path)
+                if not path or path == "" then
+                  return
+                end
+
+                -- Expand path
+                path = vim.fn.expand(path)
+
+                -- Create the worktree
+                local cmd =
+                  string.format("git worktree add -b %s %s", vim.fn.shellescape(branch_name), vim.fn.shellescape(path))
+                local create_output = vim.fn.system(cmd)
+                if vim.v.shell_error == 0 then
+                  vim.notify("Created worktree: " .. path .. " (" .. branch_name .. ")")
+
+                  -- Ask if user wants to switch to the new worktree
+                  vim.ui.select({ "Yes", "No" }, {
+                    prompt = "Switch to new worktree?",
+                  }, function(switch_choice)
+                    if switch_choice == "Yes" then
+                      vim.cmd("cd " .. vim.fn.fnameescape(path))
+                      vim.notify("Switched to worktree: " .. path)
+                      vim.cmd("enew") -- Open a new buffer
+                    end
+                  end)
+                else
+                  vim.notify("Error creating worktree: " .. create_output, vim.log.levels.ERROR)
+                end
+              end)
+            end)
+          else
+            -- Default path suggestion
+            local default_path = vim.fn.expand("~") .. "/worktrees/" .. branch_name
+
+            vim.ui.input({
+              prompt = "Worktree path: ",
+              default = default_path,
+            }, function(path)
+              if not path or path == "" then
+                return
+              end
+
+              -- Expand path
+              path = vim.fn.expand(path)
+
+              -- Create the worktree
+              local cmd =
+                string.format("git worktree add %s %s", vim.fn.shellescape(path), vim.fn.shellescape(branch_name))
+              local create_output = vim.fn.system(cmd)
+              if vim.v.shell_error == 0 then
+                vim.notify("Created worktree: " .. path .. " (" .. branch_name .. ")")
+
+                -- Ask if user wants to switch to the new worktree
+                vim.ui.select({ "Yes", "No" }, {
+                  prompt = "Switch to new worktree?",
+                }, function(switch_choice)
+                  if switch_choice == "Yes" then
+                    vim.cmd("cd " .. vim.fn.fnameescape(path))
+                    vim.notify("Switched to worktree: " .. path)
+                    vim.cmd("enew") -- Open a new buffer
+                  end
+                end)
+              else
+                vim.notify("Error creating worktree: " .. create_output, vim.log.levels.ERROR)
+              end
+            end)
+          end
+        end)
+      end,
+      desc = "Add Git Worktree",
+    },
+    -- Delete Git Worktree
+    {
+      "<leader>gwd",
+      function()
+        -- Get list of worktrees
+        local output = vim.fn.system("git worktree list")
+        if vim.v.shell_error ~= 0 then
+          vim.notify("Error: Not in a git repository or no worktrees found", vim.log.levels.ERROR)
+          return
+        end
+
+        local worktrees = {}
+        local current_path = vim.fn.getcwd()
+
+        for line in output:gmatch("[^\r\n]+") do
+          if line and line ~= "" then
+            local path = line:match("^([^%s]+)")
+            if path and path ~= current_path then -- Don't allow deleting current worktree
+              table.insert(worktrees, {
+                path = path,
+                display = line,
+              })
+            end
+          end
+        end
+
+        if #worktrees == 0 then
+          vim.notify("No worktrees available for deletion (cannot delete current worktree)")
+          return
+        end
+
+        local items = {}
+        for _, wt in ipairs(worktrees) do
+          table.insert(items, wt.display)
+        end
+
+        vim.ui.select(items, {
+          prompt = "Select worktree to delete:",
+        }, function(choice, idx)
+          if not choice or not idx then
+            return
+          end
+
+          local selected = worktrees[idx]
+
+          -- Confirm deletion
+          vim.ui.select({ "Yes", "No" }, {
+            prompt = "Delete worktree '" .. selected.path .. "'? (This will remove the directory)",
+          }, function(confirm)
+            if confirm == "Yes" then
+              local cmd = "git worktree remove " .. vim.fn.shellescape(selected.path)
+              local delete_output = vim.fn.system(cmd)
+
+              if vim.v.shell_error == 0 then
+                vim.notify("Deleted worktree: " .. selected.path)
+              else
+                -- If worktree has changes, git might refuse to delete it
+                if delete_output:match("contains modified or untracked files") then
+                  vim.ui.select({ "Yes", "No" }, {
+                    prompt = "Worktree contains changes. Force delete?",
+                  }, function(force_confirm)
+                    if force_confirm == "Yes" then
+                      local force_cmd = "git worktree remove --force " .. vim.fn.shellescape(selected.path)
+                      local force_output = vim.fn.system(force_cmd)
+                      if vim.v.shell_error == 0 then
+                        vim.notify("Force deleted worktree: " .. selected.path)
+                      else
+                        vim.notify("Error force deleting worktree: " .. force_output, vim.log.levels.ERROR)
+                      end
+                    end
+                  end)
+                else
+                  vim.notify("Error deleting worktree: " .. delete_output, vim.log.levels.ERROR)
+                end
+              end
+            end
+          end)
+        end)
+      end,
+      desc = "Delete Git Worktree",
+    },
     -- Grep
     {
       "<leader>sg",
