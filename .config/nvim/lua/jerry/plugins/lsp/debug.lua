@@ -20,19 +20,6 @@ return {
           clear_on_continue = false,
         },
       },
-      {
-        "mfussenegger/nvim-dap-python",
-        ft = "python",
-        lazy = true,
-        config = function()
-          local python_path = vim.fn.trim(vim.fn.system("which python"))
-          if vim.fn.executable(python_path) == 0 then
-            vim.notify("Python with debugpy not found: " .. python_path, vim.log.levels.ERROR)
-            return
-          end
-          require("dap-python").setup(python_path)
-        end,
-      },
     },
     keys = {
       { "<leader>dc", "<cmd>DapContinue<CR>", desc = "Start or continue debugging" },
@@ -105,6 +92,24 @@ return {
           end
         end
         return nil
+      end
+
+      -- Python adapter (Nix)
+      local function setup_python_adapter()
+        -- Find Python with debugpy
+        local python_cmd = vim.fn.exepath("python3") or vim.fn.exepath("python") or "python3"
+
+        -- Check if debugpy is available
+        local has_debugpy = vim.fn.system(python_cmd .. " -c 'import debugpy' 2>/dev/null")
+        if vim.v.shell_error == 0 then
+          dap.adapters.python = {
+            type = "executable",
+            command = python_cmd,
+            args = { "-m", "debugpy.adapter" },
+          }
+        else
+          vim.notify("debugpy module not found. Install with: pip install debugpy", vim.log.levels.ERROR)
+        end
       end
 
       -- Firefox adapter (Nix)
@@ -182,7 +187,7 @@ return {
           {
             type = "pwa-chrome",
             request = "launch",
-            name = "Launch Chrome to debug ",
+            name = "Launch Chrome to debug ",
             url = function()
               return prompt_url("http://localhost:3000")
             end,
@@ -213,6 +218,42 @@ return {
         dap.configurations.javascriptreact = js_configs
         dap.configurations.typescriptreact = js_configs
         dap.configurations.vue = js_configs
+      end
+
+      -- Python configs
+      local function get_python_configs()
+        return {
+          {
+            type = "python",
+            request = "launch",
+            name = "Launch current Python file",
+            program = "${file}",
+            pythonPath = function()
+              local venv = vim.fn.getenv("VIRTUAL_ENV")
+              if venv ~= vim.NIL and venv ~= "" then
+                return venv .. "/bin/python"
+              end
+              return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
+            end,
+          },
+          {
+            type = "python",
+            request = "launch",
+            name = "Launch with arguments",
+            program = "${file}",
+            args = function()
+              local args_string = vim.fn.input("Arguments: ")
+              return vim.split(args_string, " +")
+            end,
+            pythonPath = function()
+              local venv = vim.fn.getenv("VIRTUAL_ENV")
+              if venv ~= vim.NIL and venv ~= "" then
+                return venv .. "/bin/python"
+              end
+              return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
+            end,
+          },
+        }
       end
 
       -- Go configs
@@ -317,6 +358,13 @@ return {
         elseif ft == "go" then
           if not dap.configurations.go then
             dap.configurations.go = get_go_configs()
+          end
+        elseif ft == "python" then
+          if not dap.configurations.python then
+            setup_python_adapter()
+            if dap.adapters.python then
+              dap.configurations.python = get_python_configs()
+            end
           end
         elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
           if not dap.configurations.cpp then
