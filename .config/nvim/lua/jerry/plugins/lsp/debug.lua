@@ -100,7 +100,6 @@ return {
         local python_cmd = vim.fn.exepath("python3") or vim.fn.exepath("python") or "python3"
 
         -- Check if debugpy is available
-        local has_debugpy = vim.fn.system(python_cmd .. " -c 'import debugpy' 2>/dev/null")
         if vim.v.shell_error == 0 then
           dap.adapters.python = {
             type = "executable",
@@ -187,7 +186,7 @@ return {
           {
             type = "pwa-chrome",
             request = "launch",
-            name = "Launch Chrome to debug ",
+            name = "Launch Chrome to debug ",
             url = function()
               return prompt_url("http://localhost:3000")
             end,
