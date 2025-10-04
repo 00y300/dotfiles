@@ -25,9 +25,9 @@ return {
 
     require("codecompanion").setup({
       strategies = {
-        chat = { adapter = "mlx" },
-        inline = { adapter = "mlx" },
-        agent = { adapter = "mlx" },
+        chat = { adapter = "llama_cpp" },
+        inline = { adapter = "llama_cpp" },
+        agent = { adapter = "llama_cpp" },
       },
       adapters = {
         http = {
@@ -85,6 +85,12 @@ return {
             name = "qwen3_llamacpp",
             url = "http://localhost:8012/v1/chat/completions",
             api_key = "dummy",
+
+            num_ctx = {
+              default = 256000,
+              max = 1000000,
+              description = "Long-context Capabilities with native support for 256K tokens, extendable up to 1M tokens using Yarn, optimized for repository-scale understanding.",
+            },
             chat = {
               model = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
               temperature = 0.7,
