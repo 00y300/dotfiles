@@ -70,26 +70,71 @@ return {
     })
 
     -- Rust language server
-    vim.lsp.enable("rust_analyzer")
+    --[[ vim.lsp.enable("rust_analyzer")
     vim.lsp.config("rust_analyzer", {
       capabilities = capabilities,
       settings = {
         ["rust-analyzer"] = {
+          cargo = {
+            allTargets = false, -- Keep this for memory savings
+            buildScripts = { enable = true },
+            features = "all", -- RESTORE THIS - needed for imports to work
+          },
+
+          -- Reduce memory through cache limits instead
+          lru = {
+            capacity = 64, -- Reduced cache size
+          },
+
+          procMacro = { enable = true },
+
+          completion = {
+            autoimport = { enable = true },
+            autoself = { enable = true },
+            addSemicolonToUnit = true,
+            autoAwait = { enable = true },
+            autoIter = { enable = true },
+            callable = { snippets = "fill_arguments" },
+            postfix = { enable = true },
+          },
+
           checkOnSave = {
-            allFeatures = true,
-            overrideCommand = {
-              "cargo",
-              "clippy",
-              "--workspace",
-              "--message-format=json",
-              "--all-targets",
-              "--all-features",
-            },
+            enable = true,
+            command = "check",
+            allTargets = false, -- Keep this for performance
+          },
+
+          inlayHints = {
+            typeHints = { enable = true },
+            parameterHints = { enable = true },
+            chainingHints = { enable = true },
+            closingBraceHints = { enable = true, minLines = 25 },
+            maxLength = 25,
+          },
+
+          hover = {
+            documentation = { enable = true },
+            links = { enable = true },
+            actions = { enable = true },
+          },
+
+          lens = {
+            enable = true,
+            implementations = { enable = true },
+            run = { enable = true },
+            updateTest = { enable = true },
+          },
+
+          diagnostics = {
+            enable = true,
+          },
+
+          rustfmt = {
+            extraArgs = { "--edition=2021" },
           },
         },
       },
-    })
-
+    }) ]]
     -- Python language server
     vim.lsp.enable("pyright", {
       capabilities = capabilities,

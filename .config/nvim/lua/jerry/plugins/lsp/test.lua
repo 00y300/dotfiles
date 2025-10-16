@@ -6,15 +6,16 @@ return {
     "antoinemadec/FixCursorHold.nvim",
     "nvim-treesitter/nvim-treesitter",
     "nvim-neotest/neotest-python",
+    "mrcjkb/rustaceanvim",
   },
   config = function()
     require("neotest").setup({
       adapters = {
         require("neotest-python")({}),
+        require("rustaceanvim.neotest"),
       },
     })
   end,
-
   keys = {
     { "<leader>t", "", desc = "+test" },
     {
