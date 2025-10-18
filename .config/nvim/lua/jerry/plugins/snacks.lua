@@ -136,7 +136,7 @@ return {
       function()
         Snacks.picker.files({
           cwd = vim.fn.stdpath("config"),
-          exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*" },
+          exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*", ".cargo", "target/" },
           hidden = true,
           ignored = false,
         })
@@ -147,7 +147,8 @@ return {
       "<leader>ff",
       function()
         Snacks.picker.files({
-          exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*" },
+
+          exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*", ".cargo", "target/" },
           hidden = true,
           ignored = true,
         })
