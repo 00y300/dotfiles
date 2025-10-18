@@ -10,7 +10,9 @@ return {
 
   opts = {
     legacy_commands = false,
-    disable_frontmatter = true,
+    frontmatter = {
+      enabled = false,
+    },
 
     picker = {
       name = "snacks.pick",
@@ -25,7 +27,9 @@ return {
         name = "ZK",
         path = "~/Documents/ZK/",
         overrides = {
-          disable_frontmatter = true,
+          frontmatter = {
+            enabled = false,
+          },
           templates = {
             folder = "/Templates/",
             date_format = "%m-%d-%Y", -- MM-DD-YYYY format
