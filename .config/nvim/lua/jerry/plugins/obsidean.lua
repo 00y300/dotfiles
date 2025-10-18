@@ -10,6 +10,8 @@ return {
 
   opts = {
     legacy_commands = false,
+    disable_frontmatter = true,
+
     picker = {
       name = "snacks.pick",
     },
@@ -47,7 +49,7 @@ return {
     { "<leader>oO", "<cmd>Obsidian open<CR>", desc = "Open Obsidian" },
     { "<leader>of", "<cmd>Obsidian follow_link<CR>", desc = "Follow Link (Obsidian)" },
     { "<leader>on", "<cmd>Obsidian new<CR>", desc = "Create New Note (Obsidian)" },
-    -- { "<leader>ot", "<cmd>Obsidian today<CR>", desc = "Open Today’s Note (Obsidian)" },
+    { "<leader>ot", "<cmd>Obsidian tags<CR>", desc = "See Tags" },
     { "<leader>ott", "<cmd>Obsidian template<CR>", desc = "Applies Template to Note" },
     { "<leader>oy", "<cmd>Obsidian yesterday<CR>", desc = "Open Yesterday’s Note (Obsidian)" },
     { "<leader>os", "<cmd>Obsidian search<CR>", desc = "Search Notes (Obsidian)" },
