@@ -3,8 +3,8 @@ return {
   {
     "folke/noice.nvim",
     event = "VeryLazy",
-    -- vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", { desc = "Dismiss Noice Messages" }),
-    -- vim.keymap.set("n", "<leader>nl", "<cmd>NoiceLast<CR>", { desc = "Check Last Noice Messages" }),
+    vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", { desc = "Dismiss Noice Messages" }),
+    vim.keymap.set("n", "<leader>nl", "<cmd>NoiceLast<CR>", { desc = "Check Last Noice Messages" }),
 
     opts = function(_, opts)
       -- Ensure opts.routes is initialized

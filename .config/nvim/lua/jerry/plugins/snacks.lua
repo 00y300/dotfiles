@@ -150,7 +150,7 @@ return {
 
           exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*", ".cargo", "target/" },
           hidden = true,
-          ignored = true,
+          ignored = false,
         })
       end,
       desc = "Find Files",
@@ -726,13 +726,6 @@ return {
         Snacks.lazygit()
       end,
       desc = "Lazygit",
-    },
-    {
-      "<leader>un",
-      function()
-        Snacks.notifier.hide()
-      end,
-      desc = "Dismiss All Notifications",
     },
   },
   init = function()
