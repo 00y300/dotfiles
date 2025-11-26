@@ -17,6 +17,7 @@ return {
       vim.keymap.set("n", "mi", ":MoltenInit<CR>", { silent = true, desc = "Initialize the plugin" })
       vim.keymap.set("n", "mj", ":MoltenNext<CR>", { silent = true, desc = "Molten Next" })
       vim.keymap.set("n", "mk", ":MoltenPrev<CR>", { silent = true, desc = "Molten Previous" })
+      vim.keymap.set("n", "mO", ":MoltenImagePopup<CR>", { silent = true, desc = "Molten Imagae Pop Up" })
 
       vim.keymap.set(
         "n",
