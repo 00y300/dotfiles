@@ -100,7 +100,7 @@ return {
 
   { -- paste an image from the clipboard or drag-and-drop
     "HakonHarnes/img-clip.nvim",
-    ft = { "markdown", "quarto", "latex" },
+    -- ft = { "markdown", "quarto", "latex" },
     opts = {
       default = {
         dir_path = "img",
@@ -108,6 +108,11 @@ return {
         process_cmd = "convert - -quality 75 webp:-", ---@type string
       },
       filetypes = {
+        codecompanion = {
+          prompt_for_file_name = false,
+          template = "[Image]($FILE_PATH)",
+          use_absolute_path = true,
+        },
         markdown = {
           url_encode_path = true,
           template = "![$CURSOR]($FILE_PATH)",

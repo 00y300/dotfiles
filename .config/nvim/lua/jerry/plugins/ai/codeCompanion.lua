@@ -25,35 +25,43 @@ return {
 
     require("codecompanion").setup({
       strategies = {
-        chat = { adapter = "llama_cpp" },
-        inline = { adapter = "llama_cpp" },
-        agent = { adapter = "llama_cpp" },
+        chat = { adapter = "nvidia_nemo" },
+        inline = { adapter = "nvidia_nemo" },
+        agent = { adapter = "nvidia_nemo" },
       },
       adapters = {
         http = {
-          -- MLX adapter built using extend("openai")
-          mlx = adapters.extend("openai", {
-            name = "mlx",
-            formatted_name = "MLX-LM",
-            url = "http://localhost:8080/v1/chat/completions",
+          -- NVIDIA NeMo adapter
+          nvidia_nemo = adapters.extend("openai", {
+            name = "nvidia_nemo",
+            formatted_name = "NVIDIA NeMo",
+            url = "http://localhost:8012/v1/chat/completions",
             api_key = "DUMMY",
-            headers = { ["Content-Type"] = "application/json" },
+            headers = {
+              ["Content-Type"] = "application/json",
+            },
             opts = {
               stream = true,
               vision = false,
             },
-            features = { text = true, tokens = true },
-            roles = { llm = "assistant", user = "user" },
+            features = {
+              text = true,
+              tokens = true,
+            },
+            roles = {
+              llm = "assistant",
+              user = "user",
+            },
             schema = {
               model = {
                 order = 1,
                 mapping = "parameters",
                 type = "enum",
-                desc = "MLX model to use for code completion and chat",
-                default = "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
+                desc = "NeMo model served by NVIDIA Inference Server",
+                default = "nvidia/nemotron-4-340b-instruct",
                 choices = {
-                  "lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-MLX-6bit",
-                  "mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit",
+                  "nvidia/nemotron-4-340b-instruct",
+                  "nvidia/nemotron-mini-4b-instruct",
                 },
               },
               temperature = {
@@ -61,14 +69,14 @@ return {
                 mapping = "parameters",
                 type = "number",
                 desc = "Sampling temperature",
-                default = 0.7,
+                default = 0.6,
               },
               top_p = {
                 order = 3,
                 mapping = "parameters",
                 type = "number",
                 desc = "Nucleus sampling probability",
-                default = 0.8,
+                default = 0.9,
               },
               max_tokens = {
                 order = 4,
@@ -80,7 +88,7 @@ return {
             },
           }),
 
-          -- Llama.cpp adapter built using extend("openai")
+          -- Llama.cpp adapter
           llama_cpp = adapters.extend("openai", {
             name = "qwen3_llamacpp",
             url = "http://localhost:8012/v1/chat/completions",
@@ -109,7 +117,7 @@ return {
             },
           }),
 
-          -- Global options moved under adapters.http.opts
+          -- Global HTTP adapter options
           opts = {
             log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
             send_code = true,
@@ -134,7 +142,7 @@ return {
       prompt_library = {
         ["Custom Code Review"] = {
           strategy = "chat",
-          description = "Review code with Qwen3 Coder via MLX",
+          description = "Review code with NVIDIA NeMo",
           opts = { index = 10, default_prompt = true },
           prompts = {
             {
@@ -155,7 +163,7 @@ return {
         },
         ["Explain Code"] = {
           strategy = "chat",
-          description = "Explain selected code with MLX",
+          description = "Explain selected code with NVIDIA NeMo",
           opts = { index = 11 },
           prompts = {
             {
