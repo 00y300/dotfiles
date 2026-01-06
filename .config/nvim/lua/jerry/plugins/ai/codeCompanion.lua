@@ -4,10 +4,7 @@ return {
     "nvim-lua/plenary.nvim",
     "nvim-treesitter/nvim-treesitter",
     "folke/snacks.nvim",
-    {
-      "MeanderingProgrammer/render-markdown.nvim",
-      ft = { "markdown", "codecompanion" },
-    },
+    { "MeanderingProgrammer/render-markdown.nvim", ft = { "markdown", "codecompanion" } },
   },
 
   config = function()
@@ -56,10 +53,10 @@ return {
                 mapping = "parameters",
                 type = "enum",
                 desc = "llama-swap model alias",
-                default = "chat",
+                default = "code",
                 choices = {
-                  "instruct", -- qwen3-30b-instruct
                   "code", -- qwen3-coder-30b
+                  "instruct", -- qwen3-30b-instruct
                   "thinking", -- qwen3-30b-thinking
                   "vision", -- qwen3-vl-32b
                   "nemotron-nano-30b",
@@ -154,8 +151,9 @@ return {
   event = "VeryLazy",
   keys = {
     { "<leader>aa", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
-    { "<leader>ac", "<qcmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion Chat" },
+    { "<leader>aq", "<cmd>CodeCompanionChat adapter=llama_swap model=code<cr>", desc = "Quick Chat" },
     { "<leader>av", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion Add" },
+    { "<leader>aq", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion Add" },
     { "<leader>ai", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "CodeCompanion Inline" },
 
     { "<leader>acv", "<cmd>CodeCompanionChat adapter=llama_swap model=vision<cr>", desc = "Chat: Llama Vision" },
@@ -165,7 +163,7 @@ return {
     {
       "<leader>acn",
       "<cmd>CodeCompanionChat adapter=llama_swap model=nemotron-nano-30b<cr>",
-      desc = "Chat: Llama Code",
+      desc = "Chat: Llama Nvidia Nemo",
     },
   },
 }
