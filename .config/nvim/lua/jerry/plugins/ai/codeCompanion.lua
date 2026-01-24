@@ -60,6 +60,7 @@ return {
                   "thinking", -- qwen3-30b-thinking
                   "vision", -- qwen3-vl-32b
                   "nemotron-nano-30b",
+                  "flash",
                 },
               },
               temperature = {
@@ -157,7 +158,8 @@ return {
     { "<leader>ai", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "CodeCompanion Inline" },
 
     { "<leader>acv", "<cmd>CodeCompanionChat adapter=llama_swap model=vision<cr>", desc = "Chat: Llama Vision" },
-    { "<leader>aci", "<cmd>CodeCompanionChat adapter=llama_swap model=instruct<cr>", desc = "Chat: Llama Vision" },
+    { "<leader>acg", "<cmd>CodeCompanionChat adapter=llama_swap model=flash<cr>", desc = "Chat: Llama Flash" },
+    { "<leader>aci", "<cmd>CodeCompanionChat adapter=llama_swap model=instruct<cr>", desc = "Chat: Llama Instruct" },
     { "<leader>act", "<cmd>CodeCompanionChat adapter=llama_swap model=thinking<cr>", desc = "Chat: Llama Thinking" },
     { "<leader>acc", "<cmd>CodeCompanionChat adapter=llama_swap model=code<cr>", desc = "Chat: Llama Code" },
     {
