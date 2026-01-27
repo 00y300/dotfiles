@@ -1,57 +1,54 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  event = { "BufReadPre", "BufNewFile" },
+  lazy = false,
   build = ":TSUpdate",
-  dependencies = {
-    "windwp/nvim-ts-autotag",
-  },
   config = function()
-    local treesitter = require("nvim-treesitter.configs")
+    local treesitter = require("nvim-treesitter")
 
-    require("nvim-ts-autotag").setup()
+    local parsers = {
+      "json",
+      "javascript",
+      "typescript",
+      "tsx",
+      "yaml",
+      "html",
+      "css",
+      "prisma",
+      "markdown",
+      "markdown_inline",
+      "bash",
+      "lua",
+      "vim",
+      "dockerfile",
+      "gitignore",
+      "query",
+      "vimdoc",
+      "nix",
+      "c",
+      "python",
+      "latex",
+      "java",
+      "sql",
+      "rust",
+      "go",
+      "quarto",
+      "elixir",
+      "heex",
+    }
 
-    treesitter.setup({
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = false, -- ← merged line
-      },
-      indent = { enable = true },
-      ensure_installed = {
-        "json",
-        "javascript",
-        "typescript",
-        "tsx",
-        "yaml",
-        "html",
-        "css",
-        "prisma",
-        "markdown",
-        "markdown_inline",
-        "bash",
-        "lua",
-        "vim",
-        "dockerfile",
-        "gitignore",
-        "query",
-        "vimdoc",
-        "nix",
-        "c",
-        "python",
-        "latex",
-        "java",
-        "sql",
-        "rust",
-        "go",
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          scope_incremental = false,
-          node_decremental = "<bs>",
-        },
-      },
+    treesitter.setup()
+
+    treesitter.install(parsers)
+
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = parsers,
+      callback = function()
+        -- syntax highlighting (Neovim built-in)
+        vim.treesitter.start()
+
+        -- indentation (nvim-treesitter)
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end,
     })
   end,
 }
