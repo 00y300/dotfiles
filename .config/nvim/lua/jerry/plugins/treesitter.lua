@@ -2,49 +2,59 @@ return {
   "nvim-treesitter/nvim-treesitter",
   lazy = false,
   build = ":TSUpdate",
-  opts = {
-    ensure_installed = {
-      "json",
-      "javascript",
-      "typescript",
-      "tsx",
-      "yaml",
-      "html",
-      "css",
-      "prisma",
-      "markdown",
-      "markdown_inline",
-      "bash",
-      "lua",
-      "vim",
-      "dockerfile",
-      "gitignore",
-      "query",
-      "vimdoc",
-      "nix",
-      "c",
-      "python",
-      "latex",
-      "java",
-      "sql",
-      "rust",
-      "go",
-      "elixir",
-      "heex",
-    },
-
-    auto_install = true,
-
-    highlight = { enable = true },
-    indent = { enable = true },
-
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = "<C-space>",
-        node_incremental = "<C-space>",
-        node_decremental = "<bs>",
+  config = function()
+    -- Treat .qmd files as Markdown
+    vim.filetype.add({
+      extension = {
+        qmd = "markdown",
       },
-    },
-  },
+    })
+    -- Quarto uses the Markdown treesitter grammar
+    vim.treesitter.language.register("markdown", "quarto")
+
+    -- Changed from require("nvim-treesitter.configs") to require("nvim-treesitter")
+    require("nvim-treesitter").setup({
+      ensure_installed = {
+        "json",
+        "javascript",
+        "typescript",
+        "tsx",
+        "yaml",
+        "html",
+        "css",
+        "prisma",
+        "markdown",
+        "markdown_inline",
+        "bash",
+        "lua",
+        "vim",
+        "dockerfile",
+        "gitignore",
+        "query",
+        "vimdoc",
+        "nix",
+        "c",
+        "python",
+        "latex",
+        "java",
+        "sql",
+        "rust",
+        "go",
+        "elixir",
+        "heex",
+        "quarto",
+      },
+      auto_install = true,
+      highlight = { enable = true },
+      indent = { enable = true },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<C-space>",
+          node_incremental = "<C-space>",
+          node_decremental = "<bs>",
+        },
+      },
+    })
+  end,
 }
