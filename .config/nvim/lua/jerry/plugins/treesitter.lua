@@ -3,7 +3,7 @@ return {
   lazy = false,
   build = ":TSUpdate",
   config = function()
-    local treesitter = require("nvim-treesitter")
+    local configs = require("nvim-treesitter.configs")
 
     local parsers = {
       "json",
@@ -31,24 +31,31 @@ return {
       "sql",
       "rust",
       "go",
-      "quarto",
       "elixir",
       "heex",
     }
 
-    treesitter.setup()
+    configs.setup({
+      ensure_installed = parsers,
+      auto_install = true,
 
-    treesitter.install(parsers)
+      highlight = {
+        enable = true,
+      },
 
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = parsers,
-      callback = function()
-        -- syntax highlighting (Neovim built-in)
-        vim.treesitter.start()
+      indent = {
+        enable = true,
+      },
 
-        -- indentation (nvim-treesitter)
-        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-      end,
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<C-space>",
+          node_incremental = "<C-space>",
+          scope_incremental = false,
+          node_decremental = "<bs>",
+        },
+      },
     })
   end,
 }
