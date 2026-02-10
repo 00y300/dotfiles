@@ -3,17 +3,15 @@ return {
   lazy = false,
   build = ":TSUpdate",
   config = function()
-    -- Treat .qmd files as Markdown
     vim.filetype.add({
       extension = {
-        qmd = "markdown",
+        qmd = "quarto",
       },
     })
-    -- Quarto uses the Markdown treesitter grammar
+
     vim.treesitter.language.register("markdown", "quarto")
 
-    -- Changed from require("nvim-treesitter.configs") to require("nvim-treesitter")
-    require("nvim-treesitter").setup({
+    require("nvim-treesitter.configs").setup({
       ensure_installed = {
         "json",
         "javascript",
@@ -42,7 +40,6 @@ return {
         "go",
         "elixir",
         "heex",
-        "quarto",
       },
       auto_install = true,
       highlight = { enable = true },

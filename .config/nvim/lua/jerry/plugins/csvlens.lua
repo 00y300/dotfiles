@@ -1,59 +1,62 @@
 return {
-  {
-    "cameron-wags/rainbow_csv.nvim",
-    config = true,
-    ft = {
-      "csv",
-      "tsv",
-      "csv_semicolon",
-      "csv_whitespace",
-      "csv_pipe",
-      "rfc_csv",
-      "rfc_semicolon",
+  "emmanueltouzery/decisive.nvim",
+  lazy = true,
+  ft = { "csv" },
+  config = function()
+    local notify = vim.notify
+
+    vim.notify = function(_, _, _) end
+    require("decisive").setup({})
+    vim.notify = notify
+  end,
+  keys = {
+    {
+      "<leader>cca",
+      function()
+        local notify = vim.notify
+        vim.notify = function() end
+        require("decisive").align_csv({})
+        vim.notify = notify
+      end,
+      desc = "Align CSV",
+      mode = "n",
+      silent = true,
     },
-    cmd = {
-      "RainbowDelim",
-      "RainbowDelimSimple",
-      "RainbowDelimQuoted",
-      "RainbowMultiDelim",
+    {
+      "<leader>ccc",
+      function()
+        local notify = vim.notify
+        vim.notify = function() end
+        require("decisive").align_csv_clear({})
+        vim.notify = notify
+      end,
+      desc = "Align CSV clear",
+      mode = "n",
+      silent = true,
     },
-  },
-  {
-    "emmanueltouzery/decisive.nvim",
-    config = function()
-      require("decisive").setup({})
-    end,
-    lazy = true,
-    ft = { "csv" },
-    keys = {
-      {
-        "<leader>cca",
-        ":lua require('decisive').align_csv({})<cr>",
-        { silent = true },
-        desc = "Align CSV",
-        mode = "n",
-      },
-      {
-        "<leader>ccc",
-        ":lua require('decisive').align_csv_clear({})<cr>",
-        { silent = true },
-        desc = "Align CSV clear",
-        mode = "n",
-      },
-      {
-        "[c",
-        ":lua require('decisive').align_csv_prev_col()<cr>",
-        { silent = true },
-        desc = "Align CSV prev col",
-        mode = "n",
-      },
-      {
-        "]c",
-        ":lua require('decisive').align_csv_next_col()<cr>",
-        { silent = true },
-        desc = "Align CSV next col",
-        mode = "n",
-      },
+    {
+      "[c",
+      function()
+        local notify = vim.notify
+        vim.notify = function() end
+        require("decisive").align_csv_prev_col()
+        vim.notify = notify
+      end,
+      desc = "Align CSV prev col",
+      mode = "n",
+      silent = true,
+    },
+    {
+      "]c",
+      function()
+        local notify = vim.notify
+        vim.notify = function() end
+        require("decisive").align_csv_next_col()
+        vim.notify = notify
+      end,
+      desc = "Align CSV next col",
+      mode = "n",
+      silent = true,
     },
   },
 }
