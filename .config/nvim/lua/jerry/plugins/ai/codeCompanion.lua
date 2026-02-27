@@ -61,6 +61,7 @@ return {
                   "vision", -- qwen3-vl-32b
                   "nemotron-nano-30b",
                   "flash",
+                  "qwen3.5", -- qwen3.5-35b-a3b
                 },
               },
               temperature = {
@@ -83,43 +84,6 @@ return {
               },
             },
           }),
-
-          -- --------------------------------------------------------------
-          -- -- NVIDIA NEMO (EXPLICIT, NOT DEFAULT)
-          -- --------------------------------------------------------------
-          -- nvidia_nemo = adapters.extend("openai", {
-          --   name = "nvidia_nemo",
-          --   formatted_name = "NVIDIA NeMo",
-          --   url = "http://localhost:8012/v1/chat/completions",
-          --   api_key = "DUMMY",
-          --
-          --   opts = { stream = true },
-          --
-          --   schema = {
-          --     model = {
-          --       order = 1,
-          --       mapping = "parameters",
-          --       type = "enum",
-          --       default = "nvidia/nemotron-4-340b-instruct",
-          --       choices = {
-          --         "nvidia/nemotron-4-340b-instruct",
-          --         "nvidia/nemotron-mini-4b-instruct",
-          --       },
-          --     },
-          --     temperature = {
-          --       order = 2,
-          --       mapping = "parameters",
-          --       type = "number",
-          --       default = 0.6,
-          --     },
-          --     max_tokens = {
-          --       order = 3,
-          --       mapping = "parameters",
-          --       type = "number",
-          --       default = 4096,
-          --     },
-          --   },
-          -- }),
 
           --------------------------------------------------------------
           -- GLOBAL HTTP OPTIONS
@@ -151,17 +115,58 @@ return {
 
   event = "VeryLazy",
   keys = {
-    { "<leader>aa", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
+    {
+      "<leader>aa",
+      "<cmd>CodeCompanionActions<cr>",
+      mode = { "n", "v" },
+      desc = "CodeCompanion Actions",
+    },
     { "<leader>aq", "<cmd>CodeCompanionChat adapter=llama_swap model=code<cr>", desc = "Quick Chat" },
-    { "<leader>av", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion Add" },
-    { "<leader>aq", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion Add" },
-    { "<leader>ai", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "CodeCompanion Inline" },
+    {
+      "<leader>av",
+      "<cmd>CodeCompanionChat Add<cr>",
+      mode = "v",
+      desc = "CodeCompanion Add",
+    },
+    {
+      "<leader>aq",
+      "<cmd>CodeCompanionChat Add<cr>",
+      mode = "v",
+      desc = "CodeCompanion Add",
+    },
+    {
+      "<leader>ai",
+      "<cmd>CodeCompanion<cr>",
+      mode = { "n", "v" },
+      desc = "CodeCompanion Inline",
+    },
 
-    { "<leader>acv", "<cmd>CodeCompanionChat adapter=llama_swap model=vision<cr>", desc = "Chat: Llama Vision" },
-    { "<leader>acg", "<cmd>CodeCompanionChat adapter=llama_swap model=flash<cr>", desc = "Chat: Llama Flash" },
-    { "<leader>aci", "<cmd>CodeCompanionChat adapter=llama_swap model=instruct<cr>", desc = "Chat: Llama Instruct" },
-    { "<leader>act", "<cmd>CodeCompanionChat adapter=llama_swap model=thinking<cr>", desc = "Chat: Llama Thinking" },
-    { "<leader>acc", "<cmd>CodeCompanionChat adapter=llama_swap model=code<cr>", desc = "Chat: Llama Code" },
+    {
+      "<leader>acv",
+      "<cmd>CodeCompanionChat adapter=llama_swap model=vision<cr>",
+      desc = "Chat: Llama Vision",
+    },
+    {
+      "<leader>acg",
+      "<cmd>CodeCompanionChat adapter=llama_swap model=flash<cr>",
+      desc = "Chat: Llama Flash",
+    },
+    {
+      "<leader>aci",
+      "<cmd>CodeCompanionChat adapter=llama_swap model=instruct<cr>",
+      desc = "Chat: Llama Instruct",
+    },
+    {
+      "<leader>act",
+      "<cmd>CodeCompanionChat adapter=llama_swap model=thinking<cr>",
+      desc = "Chat: Llama Thinking",
+    },
+    {
+      "<leader>acc",
+      "<cmd>CodeCompanionChat adapter=llama_swap model=code<cr>",
+      desc = "Chat: Llama Code",
+    },
+    { "<leader>acq", "<cmd>CodeCompanionChat adapter=llama_swap model=qwen3.5<cr>", desc = "Chat: Qwen3.5" },
     {
       "<leader>acn",
       "<cmd>CodeCompanionChat adapter=llama_swap model=nemotron-nano-30b<cr>",

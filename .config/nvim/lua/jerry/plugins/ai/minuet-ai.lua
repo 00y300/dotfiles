@@ -3,7 +3,7 @@ return {
   dependencies = { "rafamadriz/friendly-snippets" },
   config = function()
     require("minuet").setup({
-      provider = "openai_fim_compatible", -- default provider
+      provider = "openai_fim_compatible",
       n_completions = 1,
       context_window = 512,
       provider_options = {
@@ -12,7 +12,7 @@ return {
           api_key = "TERM",
           name = "Qwen3 Coder (llama-swap)",
           end_point = "http://localhost:8080/v1/completions",
-          model = "code", -- Using the alias
+          model = "code",
           optional = {
             max_tokens = 56,
             top_p = 0.8,
@@ -25,12 +25,12 @@ return {
             suffix = false,
           },
         },
-        -- Qwen3 Instruct via llama-swap (Chat) - uses openai_compatible
+        -- Qwen3 Instruct via llama-swap (Chat)
         openai_compatible = {
           api_key = "TERM",
           name = "Qwen3 Instruct (llama-swap)",
           end_point = "http://localhost:8080/v1/chat/completions",
-          model = "chat", -- Using the alias
+          model = "chat",
           stream = false,
           optional = {
             max_tokens = 64,
@@ -43,7 +43,7 @@ return {
           api_key = "TERM",
           name = "Qwen3 Coder Full (llama-swap)",
           end_point = "http://localhost:8080/v1/completions",
-          model = "qwen3-coder-30b", -- Full model name
+          model = "qwen3-coder-30b",
           optional = {
             max_tokens = 56,
             top_p = 0.8,
@@ -56,6 +56,19 @@ return {
             suffix = false,
           },
         },
+        -- Qwen3.5 via llama-swap (Chat)
+        openai_compatible_qwen35 = {
+          api_key = "TERM",
+          name = "Qwen3.5 (llama-swap)",
+          end_point = "http://localhost:8080/v1/chat/completions",
+          model = "qwen3.5",
+          stream = false,
+          optional = {
+            max_tokens = 64,
+            temperature = 0.7,
+            top_p = 0.8,
+          },
+        },
       },
     })
 
@@ -63,15 +76,15 @@ return {
     vim.keymap.set("n", "<leader>amc", function()
       require("minuet").change_provider("openai_fim_compatible")
     end, { desc = "Minuet → Qwen3 Coder (FIM alias)" })
-
     vim.keymap.set("n", "<leader>amf", function()
       require("minuet").change_provider("openai_fim_compatible_qwen3")
     end, { desc = "Minuet → Qwen3 Coder (FIM full name)" })
-
     vim.keymap.set("n", "<leader>ami", function()
       require("minuet").change_provider("openai_compatible")
     end, { desc = "Minuet → Qwen3 Instruct (Chat)" })
-
+    vim.keymap.set("n", "<leader>amq", function()
+      require("minuet").change_provider("openai_compatible_qwen35")
+    end, { desc = "Minuet → Qwen3.5 (Chat)" })
     vim.keymap.set("n", "<leader>amo", ":Minuet cmp disable<cr>", {
       silent = true,
       desc = "Turn off Minuet",
