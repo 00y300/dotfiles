@@ -40,6 +40,7 @@ return {
         "go",
         "elixir",
         "heex",
+        "toml",
       },
       auto_install = true,
       highlight = { enable = true },

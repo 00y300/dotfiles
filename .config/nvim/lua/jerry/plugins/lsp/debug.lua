@@ -22,12 +22,55 @@ return {
       },
     },
     keys = {
-      { "<leader>dc", "<cmd>DapContinue<CR>", desc = "Start or continue debugging" },
-      { "<leader>dC", "<cmd>DapClearBreakpoints<CR>", desc = "Clear all Breakpoints" },
-      { "<leader>do", "<cmd>DapStepOver<CR>", desc = "Step over" },
-      { "<leader>di", "<cmd>DapStepInto<CR>", desc = "Step into" },
-      { "<leader>dO", "<cmd>DapStepOut<CR>", desc = "Step out" },
-      { "<leader>db", "<cmd>DapToggleBreakpoint<CR>", desc = "Toggle breakpoint" },
+      {
+        "<leader>dc",
+        function()
+          require("dap").continue()
+        end,
+        desc = "Start or continue debugging",
+      },
+      {
+        "<leader>dC",
+        function()
+          require("dap").clear_breakpoints()
+        end,
+        desc = "Clear all Breakpoints",
+      },
+      {
+        "<leader>do",
+        function()
+          require("dap").step_over()
+        end,
+        desc = "Step over",
+      },
+      {
+        "<leader>di",
+        function()
+          require("dap").step_into()
+        end,
+        desc = "Step into",
+      },
+      {
+        "<leader>dO",
+        function()
+          require("dap").step_out()
+        end,
+        desc = "Step out",
+      },
+      {
+        "<leader>db",
+        function()
+          require("dap").toggle_breakpoint()
+        end,
+        desc = "Toggle breakpoint",
+      },
+      {
+        "<leader>dB",
+        function()
+          require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+        end,
+        desc = "Set conditional breakpoint",
+      },
       {
         "<leader>dx",
         function()
@@ -37,18 +80,20 @@ return {
         end,
         desc = "Terminate debugging session",
       },
-      { "<leader>dr", "<cmd>DapReplToggle<CR>", desc = "Toggle REPL" },
-      { "<leader>de", "<cmd>lua require('dapui').eval()<CR>", desc = "Evaluate Expression" },
-    },
-    cmd = {
-      "DapContinue",
-      "DapToggleBreakpoint",
-      "DapStepOver",
-      "DapStepInto",
-      "DapStepOut",
-      "DapClearBreakpoints",
-      "DapTerminate",
-      "DapReplToggle",
+      {
+        "<leader>dr",
+        function()
+          require("dap").repl.toggle()
+        end,
+        desc = "Toggle REPL",
+      },
+      {
+        "<leader>de",
+        function()
+          require("dapui").eval()
+        end,
+        desc = "Evaluate Expression",
+      },
     },
     config = function()
       local dap = require("dap")
@@ -72,7 +117,78 @@ return {
         })
       end
 
+      -- ══════════════════════════════════════════════════════════
+      -- Probe-rs adapter (embedded: ESP32, STM32, nRF, RP2040)
+      -- ══════════════════════════════════════════════════════════
+      local function setup_probe_rs()
+        local probe_rs = vim.fn.exepath("probe-rs")
+        if probe_rs == "" then
+          vim.notify("probe-rs not found in PATH", vim.log.levels.ERROR)
+          return false
+        end
+
+        dap.adapters["probe-rs-debug"] = {
+          type = "server",
+          port = "${port}",
+          executable = {
+            command = probe_rs,
+            args = { "dap-server", "--port", "${port}" },
+          },
+        }
+
+        -- Associate probe-rs-debug configs with rust files
+        require("dap.ext.vscode").type_to_filetypes["probe-rs-debug"] = { "rust" }
+
+        -- RTT channel config — must confirm or probe-rs won't send RTT data
+        dap.listeners.before["event_probe-rs-rtt-channel-config"]["probe-rs"] = function(session, body)
+          local utils = require("dap.utils")
+          utils.notify(
+            string.format('probe-rs: Opening RTT channel %d with name "%s"!', body.channelNumber, body.channelName)
+          )
+          local file = io.open("probe-rs.log", "a")
+          if file then
+            file:write(
+              string.format(
+                '%s: Opening RTT channel %d with name "%s"!\n',
+                os.date("%Y-%m-%d-T%H:%M:%S"),
+                body.channelNumber,
+                body.channelName
+              )
+            )
+            file:close()
+          end
+          session:request("rttWindowOpened", { body.channelNumber, true })
+        end
+
+        -- RTT data events — print to dap-repl and log file
+        dap.listeners.before["event_probe-rs-rtt-data"]["probe-rs"] = function(_, body)
+          local message =
+            string.format("%s: RTT-Channel %d - %s", os.date("%Y-%m-%d-T%H:%M:%S"), body.channelNumber, body.data)
+          require("dap.repl").append(message)
+          local file = io.open("probe-rs.log", "a")
+          if file then
+            file:write(message .. "\n")
+            file:close()
+          end
+        end
+
+        -- Probe-rs status messages
+        dap.listeners.before["event_probe-rs-show-message"]["probe-rs"] = function(_, body)
+          local message = string.format("%s: probe-rs: %s", os.date("%Y-%m-%d-T%H:%M:%S"), body.message)
+          require("dap.repl").append(message)
+          local file = io.open("probe-rs.log", "a")
+          if file then
+            file:write(message .. "\n")
+            file:close()
+          end
+        end
+
+        return true
+      end
+
+      -- ══════════════════════════════════════════════════════════
       -- Codelldb (Nix)
+      -- ══════════════════════════════════════════════════════════
       local function get_codelldb_adapter()
         local ok, lldb_path = pcall(
           vim.fn.trim,
@@ -94,7 +210,9 @@ return {
         return nil
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- Python adapter (Nix)
+      -- ══════════════════════════════════════════════════════════
       local function setup_python_adapter()
         -- Find Python with debugpy
         local python_cmd = vim.fn.exepath("python3") or vim.fn.exepath("python") or "python3"
@@ -111,7 +229,9 @@ return {
         end
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- Firefox adapter (Nix)
+      -- ══════════════════════════════════════════════════════════
       local function setup_firefox_adapter()
         local ok, firefox_path = pcall(
           vim.fn.trim,
@@ -125,7 +245,7 @@ return {
             .. "/share/vscode/extensions/firefox-devtools.vscode-firefox-debug/dist/adapter.bundle.js"
 
           if vim.fn.filereadable(adapter_js) == 1 then
-            require("dap").adapters.firefox = {
+            dap.adapters.firefox = {
               type = "executable",
               command = "node",
               args = { adapter_js },
@@ -146,7 +266,9 @@ return {
         end)
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- JS/TS debug adapters (Node + Chrome + Firefox)
+      -- ══════════════════════════════════════════════════════════
       local function setup_js_adapters()
         local ok, js_debug_path =
           pcall(vim.fn.trim, vim.fn.system("nix eval --raw nixpkgs#vscode-js-debug 2>/dev/null"))
@@ -186,7 +308,7 @@ return {
           {
             type = "pwa-chrome",
             request = "launch",
-            name = "Launch Chrome to debug ",
+            name = "Launch Chrome to debug ",
             url = function()
               return prompt_url("http://localhost:3000")
             end,
@@ -219,7 +341,9 @@ return {
         dap.configurations.vue = js_configs
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- Python configs
+      -- ══════════════════════════════════════════════════════════
       local function get_python_configs()
         return {
           {
@@ -255,7 +379,9 @@ return {
         }
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- Go configs
+      -- ══════════════════════════════════════════════════════════
       local function get_go_configs()
         return {
           {
@@ -274,7 +400,9 @@ return {
         }
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- GDB configs
+      -- ══════════════════════════════════════════════════════════
       local function get_gdb_configs()
         return {
           {
@@ -314,7 +442,9 @@ return {
         }
       end
 
+      -- ══════════════════════════════════════════════════════════
       -- C/C++ configs
+      -- ══════════════════════════════════════════════════════════
       local function get_cpp_configs()
         local configs = {}
         local codelldb = get_codelldb_adapter()
@@ -347,7 +477,44 @@ return {
         return configs
       end
 
-      -- Lazy setup
+      -- ══════════════════════════════════════════════════════════
+      -- Embedded project detection
+      -- ══════════════════════════════════════════════════════════
+      local function is_embedded_rust_project()
+        local cargo_toml = cwd .. "/Cargo.toml"
+        if vim.fn.filereadable(cargo_toml) ~= 1 then
+          return false
+        end
+        local lines = vim.fn.readfile(cargo_toml)
+        for _, line in ipairs(lines) do
+          if
+            line:match("esp%-hal")
+            or line:match("esp%-idf")
+            or line:match("cortex%-m")
+            or line:match("embassy%-")
+            or line:match("probe%-rs")
+            or line:match("nrf%-hal")
+            or line:match("stm32")
+            or line:match("rp2040")
+          then
+            return true
+          end
+        end
+        local cargo_config = cwd .. "/.cargo/config.toml"
+        if vim.fn.filereadable(cargo_config) == 1 then
+          local config_lines = vim.fn.readfile(cargo_config)
+          for _, line in ipairs(config_lines) do
+            if line:match("xtensa%-") or line:match("thumbv[67]") or line:match("riscv32") then
+              return true
+            end
+          end
+        end
+        return false
+      end
+
+      -- ══════════════════════════════════════════════════════════
+      -- Lazy language config setup
+      -- ══════════════════════════════════════════════════════════
       local function setup_language_configs()
         local ft = vim.bo.filetype
         if vim.tbl_contains({ "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" }, ft) then
@@ -365,8 +532,12 @@ return {
               dap.configurations.python = get_python_configs()
             end
           end
+        elseif ft == "rust" and is_embedded_rust_project() then
+          if not dap.adapters["probe-rs-debug"] then
+            setup_probe_rs()
+          end
         elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
-          if not dap.configurations.cpp then
+          if not dap.configurations[ft] then
             if not dap.adapters.gdb then
               dap.adapters.gdb = {
                 type = "executable",
@@ -377,7 +548,9 @@ return {
             local cpp_configs = get_cpp_configs()
             dap.configurations.cpp = cpp_configs
             dap.configurations.c = cpp_configs
-            dap.configurations.rust = cpp_configs
+            if not dap.configurations.rust then
+              dap.configurations.rust = cpp_configs
+            end
           end
         end
       end
