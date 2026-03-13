@@ -23,7 +23,7 @@ return {
         python = { "isort", "black" },
         cpp = { "clang-format" },
         c = { "clang-format" },
-        cmake = { "gersemi" },
+        cmake = { "gersemi", "cmake-format" },
         quarto = { "injected" },
         java = { "clang-format" },
         go = { "goimports", "gofumpt" },

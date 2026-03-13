@@ -401,48 +401,6 @@ return {
       end
 
       -- ══════════════════════════════════════════════════════════
-      -- GDB configs
-      -- ══════════════════════════════════════════════════════════
-      local function get_gdb_configs()
-        return {
-          {
-            name = "Launch (GDB)",
-            type = "gdb",
-            request = "launch",
-            program = function()
-              return vim.fn.input("Path to executable: ", cwd .. "/", "file")
-            end,
-            cwd = "${workspaceFolder}",
-            stopOnEntry = false,
-            stopAtBeginningOfMainSubprogram = false,
-          },
-          {
-            name = "Select and attach to process (GDB)",
-            type = "gdb",
-            request = "attach",
-            program = function()
-              return vim.fn.input("Path to executable: ", cwd .. "/", "file")
-            end,
-            pid = function()
-              local filter = vim.fn.input("Executable name (filter): ")
-              return require("dap.utils").pick_process({ filter = filter })
-            end,
-            cwd = "${workspaceFolder}",
-          },
-          {
-            name = "Attach to gdbserver :1234 (GDB)",
-            type = "gdb",
-            request = "attach",
-            target = "localhost:1234",
-            program = function()
-              return vim.fn.input("Path to executable: ", cwd .. "/", "file")
-            end,
-            cwd = "${workspaceFolder}",
-          },
-        }
-      end
-
-      -- ══════════════════════════════════════════════════════════
       -- C/C++ configs
       -- ══════════════════════════════════════════════════════════
       local function get_cpp_configs()
@@ -472,8 +430,6 @@ return {
           }
           configs = vim.list_extend(configs, cpp_configs)
         end
-        local gdb_configs = get_gdb_configs()
-        configs = vim.list_extend(configs, gdb_configs)
         return configs
       end
 
@@ -538,13 +494,6 @@ return {
           end
         elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
           if not dap.configurations[ft] then
-            if not dap.adapters.gdb then
-              dap.adapters.gdb = {
-                type = "executable",
-                command = vim.fn.trim(vim.fn.system("readlink -e $(which gdb) 2>/dev/null || echo 'gdb'")),
-                args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
-              }
-            end
             local cpp_configs = get_cpp_configs()
             dap.configurations.cpp = cpp_configs
             dap.configurations.c = cpp_configs
