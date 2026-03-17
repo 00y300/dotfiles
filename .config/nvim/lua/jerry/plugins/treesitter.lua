@@ -1,6 +1,7 @@
 return {
   "nvim-treesitter/nvim-treesitter",
   lazy = false,
+  branch = "main",
   build = ":TSUpdate",
   config = function()
     vim.filetype.add({
@@ -8,10 +9,9 @@ return {
         qmd = "quarto",
       },
     })
-
     vim.treesitter.language.register("markdown", "quarto")
 
-    require("nvim-treesitter.configs").setup({
+    require("nvim-treesitter").setup({
       ensure_installed = {
         "json",
         "javascript",
@@ -43,16 +43,14 @@ return {
         "toml",
       },
       auto_install = true,
-      highlight = { enable = true },
-      indent = { enable = true },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          node_decremental = "<bs>",
-        },
-      },
+    })
+
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "*",
+      callback = function(event)
+        pcall(vim.treesitter.start, event.buf)
+        vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end,
     })
   end,
 }
