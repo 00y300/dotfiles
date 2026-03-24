@@ -45,3 +45,12 @@ keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" 
 keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
 keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
 keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
+vim.keymap.set("n", "<leader>rc", function()
+  for name, _ in pairs(package.loaded) do
+    if name:match("^jerry%.core") then
+      package.loaded[name] = nil
+    end
+  end
+  require("jerry.core")
+  vim.notify("Core config reloaded!")
+end, { desc = "Reload core config" })

@@ -31,6 +31,12 @@ return {
           ["nixos"] = {
             cmd = { "uvx", "mcp-nixos" },
           },
+          ["esp-idf"] = {
+            cmd = { "idf.py", "mcp-server" },
+            env = {
+              IDF_MCP_WORKSPACE_FOLDER = vim.fn.getcwd(),
+            },
+          },
         },
       },
 
@@ -157,6 +163,27 @@ return {
         },
       },
     })
+
+    --------------------------------------------------------------------------
+    -- FIX: Patch show_diff for C++ (and similar) filetype bug
+    -- Treesitter reports "C++" but nvim_set_option_value expects "cpp".
+    -- show_diff(args) passes args.ft directly to nvim_set_option_value.
+    -- We intercept and resolve the real vim filetype from args.bufnr.
+    -- See: https://github.com/olimorris/codecompanion.nvim/issues/531
+    --------------------------------------------------------------------------
+    local ok, helpers = pcall(require, "codecompanion.helpers")
+    if ok and helpers and helpers.show_diff then
+      local original_show_diff = helpers.show_diff
+      helpers.show_diff = function(args)
+        if args and args.ft and args.bufnr then
+          local fok, real_ft = pcall(vim.api.nvim_get_option_value, "filetype", { buf = args.bufnr })
+          if fok and real_ft and real_ft ~= "" then
+            args.ft = real_ft
+          end
+        end
+        return original_show_diff(args)
+      end
+    end
   end,
 
   event = "VeryLazy",

@@ -5,6 +5,16 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     opts = {
       render_modes = { "n", "c", "v" },
+      file_types = { "markdown", "quarto", "codecompanion" },
+      overrides = {
+        filetype = {
+          codecompanion = {
+            heading = {
+              icons = { "󰚩 ", "󰭹 ", "🧠 ", "󰮊 ", "󰮊 ", "󰮊 " },
+            },
+          },
+        },
+      },
     },
   },
   {

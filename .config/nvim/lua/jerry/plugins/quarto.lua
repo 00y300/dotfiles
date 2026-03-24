@@ -1,7 +1,7 @@
 return {
   {
     "quarto-dev/quarto-nvim",
-    ft = { "quarto" },
+    ft = { "quarto", "markdown" },
     dev = false,
     opts = {
       debug = false,
@@ -39,11 +39,11 @@ return {
         end,
         desc = "Activate Otter",
       },
-      { "<leader>rc", "<cmd>QuartoSend<CR>", desc = "Quarto send cell" },
-      { "<leader>rA", "<cmd>QuartoSendAbove<CR>", desc = "Quarto send cell and above" },
-      { "<leader>rB", "<cmd>QuartoSendBelow<CR>", desc = "Quarto send below" },
-      { "<leader>ra", "<cmd>QuartoSendAll<CR>", desc = "Quarto send all cells" },
-      { "<leader>rp", "<cmd>QuartoPreview<CR>", desc = "Quarto Preview" },
+      { "<leader>qc", "<cmd>QuartoSend<CR>", desc = "Quarto send cell" },
+      { "<leader>qA", "<cmd>QuartoSendAbove<CR>", desc = "Quarto send cell and above" },
+      { "<leader>qB", "<cmd>QuartoSendBelow<CR>", desc = "Quarto send below" },
+      { "<leader>qa", "<cmd>QuartoSendAll<CR>", desc = "Quarto send all cells" },
+      { "<leader>qp", "<cmd>QuartoPreview<CR>", desc = "Quarto Preview" },
     },
   },
   {

@@ -149,6 +149,13 @@ return {
     vim.lsp.enable("clangd", {
       capabilities = capabilities,
     })
+    vim.lsp.config("clangd", {
+      cmd = {
+        "clangd",
+        "--query-driver=**/*esp*gcc,**/*esp*g++",
+        "--background-index",
+      },
+    })
 
     -- TypeScript/JavaScript language server
 
