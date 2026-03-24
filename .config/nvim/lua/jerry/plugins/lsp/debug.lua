@@ -94,6 +94,21 @@ return {
         end,
         desc = "Evaluate Expression",
       },
+      {
+        "<leader>dE",
+        function()
+          local dap = require("dap")
+          local configs = dap.configurations.cpp or {}
+          for _, c in ipairs(configs) do
+            if c.name:match("ESP32") then
+              dap.run(c)
+              return
+            end
+          end
+          vim.notify("No ESP32 debug config found", vim.log.levels.WARN)
+        end,
+        desc = "Debug ESP32 (quick launch)",
+      },
     },
     config = function()
       local dap = require("dap")
@@ -118,7 +133,150 @@ return {
       end
 
       -- ══════════════════════════════════════════════════════════
-      -- Probe-rs adapter (embedded: ESP32, STM32, nRF, RP2040)
+      -- ESP32-S3 adapter (OpenOCD + xtensa-gdb DAP mode)
+      -- ══════════════════════════════════════════════════════════
+      local function find_xtensa_gdb()
+        local known_path = vim.fn.expand(
+          "$HOME/.espressif/tools/xtensa-esp-elf-gdb/16.3_20250913/xtensa-esp-elf-gdb/bin/xtensa-esp32s3-elf-gdb"
+        )
+        if vim.fn.executable(known_path) == 1 then
+          return known_path
+        end
+        local glob = vim.fn.glob(
+          vim.fn.expand("$HOME/.espressif/tools/xtensa-esp-elf-gdb/*/xtensa-esp-elf-gdb/bin/xtensa-esp32s3-elf-gdb"),
+          false,
+          true
+        )
+        if type(glob) == "table" and #glob > 0 then
+          return glob[#glob]
+        end
+        local from_path = vim.fn.exepath("xtensa-esp32s3-elf-gdb")
+        if from_path ~= "" then
+          return from_path
+        end
+        return nil
+      end
+
+      local function find_elf()
+        local candidates = {
+          cwd .. "/build/app.elf",
+          cwd .. "/build/" .. vim.fn.fnamemodify(cwd, ":t") .. ".elf",
+        }
+        for _, path in ipairs(candidates) do
+          if vim.fn.filereadable(path) == 1 then
+            return path
+          end
+        end
+        local elfs = vim.fn.glob(cwd .. "/build/*.elf", false, true)
+        if type(elfs) == "table" and #elfs > 0 then
+          return elfs[1]
+        end
+        return vim.fn.input("Path to ELF: ", cwd .. "/build/", "file")
+      end
+
+      local function setup_esp32s3()
+        local gdb_path = find_xtensa_gdb()
+        if not gdb_path then
+          vim.notify("xtensa-esp32s3-elf-gdb not found. Is ESP-IDF installed?", vim.log.levels.ERROR)
+          return false
+        end
+
+        local elf_path = find_elf()
+
+        -- Pass ELF on command line so symbols load before DAP handshake
+        dap.adapters.esp32s3 = {
+          type = "executable",
+          command = gdb_path,
+          args = { "-i", "dap", elf_path },
+        }
+
+        dap.configurations.cpp = dap.configurations.cpp or {}
+        dap.configurations.c = dap.configurations.c or {}
+        -- The sequence that works in manual GDB:
+        --   1. file app.elf           (done via args above)
+        --   2. target remote :3333    (initCommands)
+        --   3. monitor reset halt     (initCommands)
+        --   4. break app.cpp:12       (nvim-dap sends setBreakpoints)
+        --   5. continue               (nvim-dap sends after configurationDone)
+        --
+        -- Key insight from the DAP log: with request="launch", GDB DAP
+        -- reloads the ELF after configurationDone but never sends a
+        -- "stopped" event and never runs "continue". The target just sits.
+        --
+        -- With request="attach", nvim-dap expects the process already
+        -- exists and will send "continue" after configurationDone,
+        -- which makes execution resume and hit breakpoints.
+
+        local esp_configs = {
+          {
+            name = "ESP32-S3: Debug (reset + halt + run)",
+            type = "esp32s3",
+            request = "attach",
+            program = elf_path,
+            cwd = cwd,
+            stopAtBeginningOfMainSubprogram = true,
+            target = "localhost:3333", -- ← add this
+            initCommands = {
+              "set remote hardware-watchpoint-limit 2",
+              "set remotetimeout 10",
+              "set mem inaccessible-by-default off",
+              -- same here, remove "target remote :3333"
+              "maintenance flush register-cache",
+            },
+          },
+          {
+            name = "ESP32-S3: Attach (no reset, just connect)",
+            type = "esp32s3",
+            request = "attach",
+            program = elf_path,
+            cwd = cwd,
+            stopAtBeginningOfMainSubprogram = false,
+            target = "localhost:3333", -- ← add this
+            initCommands = {
+              "set remote hardware-watchpoint-limit 2",
+              "set remotetimeout 10",
+              "set mem inaccessible-by-default off",
+              "set scheduler-locking off", -- ← let all threads run
+              "monitor reset halt",
+              "maintenance flush register-cache",
+              "thread 1", -- ← auto-select main thread
+            },
+          },
+        }
+
+        for i = #esp_configs, 1, -1 do
+          table.insert(dap.configurations.cpp, 1, esp_configs[i])
+        end
+        dap.configurations.c = dap.configurations.cpp
+
+        vim.notify("ESP32-S3 debug configured: " .. elf_path, vim.log.levels.INFO)
+        return true
+      end
+
+      -- ══════════════════════════════════════════════════════════
+      -- ESP-IDF project detection
+      -- ══════════════════════════════════════════════════════════
+      local function is_esp_idf_project()
+        if vim.fn.filereadable(cwd .. "/sdkconfig") == 1 then
+          return true
+        end
+        if vim.fn.filereadable(cwd .. "/sdkconfig.defaults") == 1 then
+          return true
+        end
+        local cmake = cwd .. "/CMakeLists.txt"
+        if vim.fn.filereadable(cmake) == 1 then
+          local lines = vim.fn.readfile(cmake)
+          for _, line in ipairs(lines) do
+            if line:match("idf_component_register") or line:match("project%(") then
+              return true
+            end
+          end
+        end
+        return false
+      end
+
+      -- ══════════════════════════════════════════════════════════
+      -- Probe-rs adapter (embedded Rust: ESP32, STM32, nRF, RP2040)
       -- ══════════════════════════════════════════════════════════
       local function setup_probe_rs()
         local probe_rs = vim.fn.exepath("probe-rs")
@@ -136,10 +294,8 @@ return {
           },
         }
 
-        -- Associate probe-rs-debug configs with rust files
         require("dap.ext.vscode").type_to_filetypes["probe-rs-debug"] = { "rust" }
 
-        -- RTT channel config — must confirm or probe-rs won't send RTT data
         dap.listeners.before["event_probe-rs-rtt-channel-config"]["probe-rs"] = function(session, body)
           local utils = require("dap.utils")
           utils.notify(
@@ -160,7 +316,6 @@ return {
           session:request("rttWindowOpened", { body.channelNumber, true })
         end
 
-        -- RTT data events — print to dap-repl and log file
         dap.listeners.before["event_probe-rs-rtt-data"]["probe-rs"] = function(_, body)
           local message =
             string.format("%s: RTT-Channel %d - %s", os.date("%Y-%m-%d-T%H:%M:%S"), body.channelNumber, body.data)
@@ -172,7 +327,6 @@ return {
           end
         end
 
-        -- Probe-rs status messages
         dap.listeners.before["event_probe-rs-show-message"]["probe-rs"] = function(_, body)
           local message = string.format("%s: probe-rs: %s", os.date("%Y-%m-%d-T%H:%M:%S"), body.message)
           require("dap.repl").append(message)
@@ -214,10 +368,8 @@ return {
       -- Python adapter (Nix)
       -- ══════════════════════════════════════════════════════════
       local function setup_python_adapter()
-        -- Find Python with debugpy
         local python_cmd = vim.fn.exepath("python3") or vim.fn.exepath("python") or "python3"
 
-        -- Check if debugpy is available
         if vim.v.shell_error == 0 then
           dap.adapters.python = {
             type = "executable",
@@ -277,7 +429,6 @@ return {
           return
         end
 
-        -- Node
         dap.adapters["pwa-node"] = {
           type = "server",
           host = "localhost",
@@ -291,7 +442,6 @@ return {
           },
         }
 
-        -- Chrome
         dap.adapters["pwa-chrome"] = dap.adapters["pwa-node"]
 
         setup_firefox_adapter()
@@ -329,7 +479,6 @@ return {
               return vim.fn.input("Enter URL: ", "http://localhost:3000")
             end,
             webRoot = cwd,
-            -- webRoot = "${workspaceFolder}/express", -- <== adjust this
             firefoxExecutable = vim.fn.trim(vim.fn.system("readlink -e $(which firefox) 2>/dev/null || echo ''")),
           })
         end
@@ -434,7 +583,7 @@ return {
       end
 
       -- ══════════════════════════════════════════════════════════
-      -- Embedded project detection
+      -- Embedded Rust project detection
       -- ══════════════════════════════════════════════════════════
       local function is_embedded_rust_project()
         local cargo_toml = cwd .. "/Cargo.toml"
@@ -491,6 +640,10 @@ return {
         elseif ft == "rust" and is_embedded_rust_project() then
           if not dap.adapters["probe-rs-debug"] then
             setup_probe_rs()
+          end
+        elseif vim.tbl_contains({ "c", "cpp" }, ft) and is_esp_idf_project() then
+          if not dap.adapters.esp32s3 then
+            setup_esp32s3()
           end
         elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
           if not dap.configurations[ft] then
