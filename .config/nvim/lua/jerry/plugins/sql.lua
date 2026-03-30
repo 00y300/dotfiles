@@ -2,7 +2,7 @@ return {
   "kristijanhusak/vim-dadbod-ui",
   dependencies = {
     { "tpope/vim-dadbod", lazy = true },
-    { "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql" }, lazy = true }, -- Optional
+    { "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql" }, lazy = true },
   },
   cmd = {
     "DBUI",
@@ -13,7 +13,7 @@ return {
   init = function()
     -- Your DBUI configuration
     vim.g.db_ui_use_nerd_fonts = 1
-    vim.g.db_ui_save_location = "../"
+    vim.g.db_ui_save_location = "./dbUIStuff/"
     -- Register key mappings for db Tools
     vim.keymap.set("n", "<leader>du", ":DBUIToggle<CR>", { desc = "DB UI Toggle", silent = true })
     vim.keymap.set("n", "<leader>df", ":DBUIFindBuffer<CR>", { desc = "DB UI Find buffer", silent = true })

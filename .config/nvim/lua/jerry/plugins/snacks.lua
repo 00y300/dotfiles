@@ -63,7 +63,7 @@ return {
         enabled = true,
         sources = {
           files = {
-            hidden = true,
+            hidden = false,
           },
           explorer = {
             hidden = true,
@@ -148,9 +148,9 @@ return {
       function()
         Snacks.picker.files({
 
-          exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*", ".cargo", "target/" },
+          exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*", ".cargo", "target/", ".venv/*" },
           hidden = true,
-          ignored = false,
+          ignored = true,
         })
       end,
       desc = "Find Files",

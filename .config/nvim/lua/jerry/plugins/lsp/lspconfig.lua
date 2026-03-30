@@ -197,6 +197,8 @@ return {
     })
 
     -- Lua language server
+
+    vim.lsp.enable("sqls")
     vim.lsp.enable("lua_ls")
     vim.lsp.config("lua_ls", {
       capabilities = capabilities,
