@@ -12,12 +12,13 @@ return {
       vim.g.molten_output_show_exec_time = true
       vim.g.molten_virt_text_output = true
       vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python3")
+      vim.g.loaded_python3_provider = nil
     end,
     config = function()
       vim.keymap.set("n", "mi", ":MoltenInit<CR>", { silent = true, desc = "Initialize the plugin" })
       vim.keymap.set("n", "mj", ":MoltenNext<CR>", { silent = true, desc = "Molten Next" })
       vim.keymap.set("n", "mk", ":MoltenPrev<CR>", { silent = true, desc = "Molten Previous" })
-      vim.keymap.set("n", "mO", ":MoltenImagePopup<CR>", { silent = true, desc = "Molten Imagae Pop Up" })
+      vim.keymap.set("n", "mO", ":MoltenImagePopup<CR>", { silent = true, desc = "Molten Image Pop Up" })
 
       vim.keymap.set(
         "n",
