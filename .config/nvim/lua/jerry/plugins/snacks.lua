@@ -150,7 +150,7 @@ return {
 
           exclude = { "node_modules", ".next/*", ".git/*", "lib/python3%..*/.*", ".cargo", "target/", ".venv/*" },
           hidden = true,
-          ignored = true,
+          ignored = false,
         })
       end,
       desc = "Find Files",
