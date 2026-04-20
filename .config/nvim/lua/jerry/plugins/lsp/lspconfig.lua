@@ -58,7 +58,7 @@ return {
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
         opts.desc = "Restart LSP"
-        vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
+        vim.keymap.set("n", "<leader>rs", ":lsp restart<CR>", opts)
       end,
     })
 
@@ -150,11 +150,11 @@ return {
       capabilities = capabilities,
     })
     vim.lsp.config("clangd", {
-      cmd = {
-        "clangd",
-        "--query-driver=**/*esp*gcc,**/*esp*g++",
-        "--background-index",
-      },
+      -- cmd = {
+      --   "clangd",
+      --   "--query-driver=**/*esp*gcc,**/*esp*g++",
+      --   "--background-index",
+      -- },
     })
 
     -- TypeScript/JavaScript language server

@@ -8,11 +8,11 @@ return {
       file_types = { "markdown", "quarto", "codecompanion" },
       overrides = {
         filetype = {
-          codecompanion = {
-            heading = {
-              icons = { "󰚩 ", "󰭹 ", "🧠 ", "󰮊 ", "󰮊 ", "󰮊 " },
-            },
-          },
+          -- codecompanion = {
+          --   heading = {
+          --     icons = { "󰚩 ", "󰭹 ", "🧠 ", "󰮊 ", "󰮊 ", "󰮊 " },
+          --   },
+          -- },
         },
       },
     },

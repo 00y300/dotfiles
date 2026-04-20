@@ -133,6 +133,31 @@ return {
       end
 
       -- ══════════════════════════════════════════════════════════
+      -- Helper: find executable in build directory
+      -- ══════════════════════════════════════════════════════════
+      local function find_build_executable()
+        local build_dir = cwd .. "/build"
+        local executables = {}
+
+        if vim.fn.isdirectory(build_dir) == 1 then
+          local files = vim.fn.globpath(build_dir, "*", false, true)
+          for _, f in ipairs(files) do
+            if vim.fn.executable(f) == 1 and vim.fn.isdirectory(f) == 0 then
+              table.insert(executables, f)
+            end
+          end
+        end
+
+        if #executables == 1 then
+          return executables[1]
+        elseif #executables > 1 then
+          return vim.fn.input("Multiple found, pick one: ", executables[1], "file")
+        else
+          return vim.fn.input("Path to executable: ", cwd .. "/build/", "file")
+        end
+      end
+
+      -- ══════════════════════════════════════════════════════════
       -- ESP32-S3 adapter (OpenOCD + xtensa-gdb DAP mode)
       -- ══════════════════════════════════════════════════════════
       local function find_xtensa_gdb()
@@ -192,20 +217,6 @@ return {
 
         dap.configurations.cpp = dap.configurations.cpp or {}
         dap.configurations.c = dap.configurations.c or {}
-        -- The sequence that works in manual GDB:
-        --   1. file app.elf           (done via args above)
-        --   2. target remote :3333    (initCommands)
-        --   3. monitor reset halt     (initCommands)
-        --   4. break app.cpp:12       (nvim-dap sends setBreakpoints)
-        --   5. continue               (nvim-dap sends after configurationDone)
-        --
-        -- Key insight from the DAP log: with request="launch", GDB DAP
-        -- reloads the ELF after configurationDone but never sends a
-        -- "stopped" event and never runs "continue". The target just sits.
-        --
-        -- With request="attach", nvim-dap expects the process already
-        -- exists and will send "continue" after configurationDone,
-        -- which makes execution resume and hit breakpoints.
 
         local esp_configs = {
           {
@@ -215,12 +226,11 @@ return {
             program = elf_path,
             cwd = cwd,
             stopAtBeginningOfMainSubprogram = true,
-            target = "localhost:3333", -- ← add this
+            target = "localhost:3333",
             initCommands = {
               "set remote hardware-watchpoint-limit 2",
               "set remotetimeout 10",
               "set mem inaccessible-by-default off",
-              -- same here, remove "target remote :3333"
               "maintenance flush register-cache",
             },
           },
@@ -231,23 +241,21 @@ return {
             program = elf_path,
             cwd = cwd,
             stopAtBeginningOfMainSubprogram = false,
-            target = "localhost:3333", -- ← add this
+            target = "localhost:3333",
             initCommands = {
               "set remote hardware-watchpoint-limit 2",
               "set remotetimeout 10",
               "set mem inaccessible-by-default off",
-              "set scheduler-locking off", -- ← let all threads run
+              "set scheduler-locking off",
               "monitor reset halt",
               "maintenance flush register-cache",
-              "thread 1", -- ← auto-select main thread
+              "thread 1",
             },
           },
         }
 
-        for i = #esp_configs, 1, -1 do
-          table.insert(dap.configurations.cpp, 1, esp_configs[i])
-        end
-        dap.configurations.c = dap.configurations.cpp
+        -- Store ESP32 configs in a dedicated type
+        dap.configurations.esp32s3 = esp_configs
 
         vim.notify("ESP32-S3 debug configured: " .. elf_path, vim.log.levels.INFO)
         return true
@@ -267,7 +275,7 @@ return {
         if vim.fn.filereadable(cmake) == 1 then
           local lines = vim.fn.readfile(cmake)
           for _, line in ipairs(lines) do
-            if line:match("idf_component_register") or line:match("project%(") then
+            if line:match("idf_component_register") or line:match("IDF_PATH") then
               return true
             end
           end
@@ -550,35 +558,51 @@ return {
       end
 
       -- ══════════════════════════════════════════════════════════
-      -- C/C++ configs
+      -- C/C++ configs (codelldb + GDB)
       -- ══════════════════════════════════════════════════════════
       local function get_cpp_configs()
         local configs = {}
+
+        -- Codelldb (if available via Nix)
         local codelldb = get_codelldb_adapter()
         if codelldb then
           dap.adapters.codelldb = codelldb
-          local cpp_configs = {
-            {
-              name = "Launch (codelldb)",
-              type = "codelldb",
-              request = "launch",
-              program = function()
-                return vim.fn.input("Path to executable: ", cwd .. "/", "file")
-              end,
-              cwd = "${workspaceFolder}",
-              stopOnEntry = false,
-              args = {},
-            },
-            {
-              name = "Attach to process (codelldb)",
-              type = "codelldb",
-              request = "attach",
-              pid = require("dap.utils").pick_process,
-              cwd = "${workspaceFolder}",
-            },
-          }
-          configs = vim.list_extend(configs, cpp_configs)
+          table.insert(configs, {
+            name = "Launch (codelldb)",
+            type = "codelldb",
+            request = "launch",
+            program = find_build_executable,
+            cwd = "${workspaceFolder}",
+            stopOnEntry = false,
+            args = {},
+          })
+          table.insert(configs, {
+            name = "Attach to process (codelldb)",
+            type = "codelldb",
+            request = "attach",
+            pid = require("dap.utils").pick_process,
+            cwd = "${workspaceFolder}",
+          })
         end
+
+        -- GDB (built-in DAP mode)
+        if vim.fn.executable("gdb") == 1 then
+          table.insert(configs, {
+            name = "Launch (GDB)",
+            type = "gdb",
+            request = "launch",
+            program = find_build_executable,
+            cwd = "${workspaceFolder}",
+            stopAtBeginningOfMainSubprogram = false,
+          })
+          table.insert(configs, {
+            name = "Attach to process (GDB)",
+            type = "gdb",
+            request = "attach",
+            pid = require("dap.utils").pick_process,
+          })
+        end
+
         return configs
       end
 
@@ -618,6 +642,17 @@ return {
       end
 
       -- ══════════════════════════════════════════════════════════
+      -- GDB adapter (GDB's native DAP mode via -i dap)
+      -- ══════════════════════════════════════════════════════════
+      local function setup_gdb_adapter()
+        dap.adapters.gdb = {
+          type = "executable",
+          command = "gdb",
+          args = { "-i", "dap" },
+        }
+      end
+
+      -- ══════════════════════════════════════════════════════════
       -- Lazy language config setup
       -- ══════════════════════════════════════════════════════════
       local function setup_language_configs()
@@ -645,14 +680,19 @@ return {
           if not dap.adapters.esp32s3 then
             setup_esp32s3()
           end
-        elseif vim.tbl_contains({ "c", "cpp", "rust" }, ft) then
-          if not dap.configurations[ft] then
+          -- ESP-IDF project: use ESP32 configs
+          dap.configurations.cpp = dap.configurations.esp32s3 or {}
+          dap.configurations.c = dap.configurations.cpp
+        elseif vim.tbl_contains({ "c", "cpp" }, ft) then
+          -- Non-ESP C/C++: use generic configs only if not already set
+          if not dap.configurations.cpp then
             local cpp_configs = get_cpp_configs()
             dap.configurations.cpp = cpp_configs
             dap.configurations.c = cpp_configs
-            if not dap.configurations.rust then
-              dap.configurations.rust = cpp_configs
-            end
+          end
+        elseif vim.tbl_contains({ "rust" }, ft) then
+          if not dap.configurations.rust then
+            dap.configurations.rust = get_cpp_configs()
           end
         end
       end
@@ -664,6 +704,9 @@ return {
         dap.continue = original_continue
         return dap.continue()
       end
+
+      -- Register GDB adapter
+      setup_gdb_adapter()
 
       -- UI + Go setup
       require("dapui").setup()

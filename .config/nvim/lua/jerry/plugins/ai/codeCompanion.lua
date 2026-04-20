@@ -46,14 +46,14 @@ return {
       ------------------------------------------------------------------
       interactions = {
         chat = {
-          adapter = { name = "llamacpp", model = "qwen3.5" },
+          adapter = { name = "llamacpp", model = "qwen3.6" },
         },
         inline = {
           -- Change this model value to switch the inline assistant model
-          adapter = { name = "llamacpp", model = "qwen3.5" },
+          adapter = { name = "llamacpp", model = "qwen3.6" },
         },
         cmd = {
-          adapter = { name = "llamacpp", model = "qwen3.5" },
+          adapter = { name = "llamacpp", model = "qwen3.6" },
         },
       },
 
@@ -74,23 +74,7 @@ return {
               schema = {
                 model = {
                   choices = {
-                    "qwen3.5",
-                    "qwen3-vl-32b",
-                    "qwen3-coder-30b",
-                    "qwen3-30b-instruct",
-                    "qwen3-30b-thinking",
-                    "nemotron-nano-30b",
-                    "glm-4-7-flash",
-                    -- aliases
-                    "code",
-                    "coder",
-                    "vision",
-                    "flash",
-                    "thinking",
-                    "instruct",
-                    "chat",
-                    "nano",
-                    "nemotron",
+                    "qwen3.6",
                   },
                 },
               },
@@ -158,50 +142,18 @@ return {
           },
           show_settings = true,
           show_reasoning = true,
-          reasoning_icon = "🧠",
           fold_reasoning = true,
         },
       },
     })
-
-    --------------------------------------------------------------------------
-    -- FIX: Patch show_diff for C++ (and similar) filetype bug
-    -- Treesitter reports "C++" but nvim_set_option_value expects "cpp".
-    -- show_diff(args) passes args.ft directly to nvim_set_option_value.
-    -- We intercept and resolve the real vim filetype from args.bufnr.
-    -- See: https://github.com/olimorris/codecompanion.nvim/issues/531
-    --------------------------------------------------------------------------
-    local ok, helpers = pcall(require, "codecompanion.helpers")
-    if ok and helpers and helpers.show_diff then
-      local original_show_diff = helpers.show_diff
-      helpers.show_diff = function(args)
-        if args and args.ft and args.bufnr then
-          local fok, real_ft = pcall(vim.api.nvim_get_option_value, "filetype", { buf = args.bufnr })
-          if fok and real_ft and real_ft ~= "" then
-            args.ft = real_ft
-          end
-        end
-        return original_show_diff(args)
-      end
-    end
   end,
 
   event = "VeryLazy",
   keys = {
     { "<leader>aa", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion Actions" },
-    { "<leader>aq", "<cmd>CodeCompanionChat adapter=llamacpp model=code<cr>", desc = "Quick Chat" },
+    { "<leader>aq", "<cmd>CodeCompanionChat adapter=llamacpp model=qwen3.6<cr>", desc = "Quick Chat" },
     { "<leader>av", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion Add" },
     { "<leader>ai", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "CodeCompanion Inline" },
-    { "<leader>acv", "<cmd>CodeCompanionChat adapter=llamacpp model=vision<cr>", desc = "Chat: Llama Vision" },
-    { "<leader>acg", "<cmd>CodeCompanionChat adapter=llamacpp model=flash<cr>", desc = "Chat: Llama Flash" },
-    { "<leader>aci", "<cmd>CodeCompanionChat adapter=llamacpp model=instruct<cr>", desc = "Chat: Llama Instruct" },
-    { "<leader>act", "<cmd>CodeCompanionChat adapter=llamacpp model=thinking<cr>", desc = "Chat: Llama Thinking" },
-    { "<leader>acc", "<cmd>CodeCompanionChat adapter=llamacpp model=code<cr>", desc = "Chat: Llama Code" },
-    { "<leader>acq", "<cmd>CodeCompanionChat adapter=llamacpp model=qwen3.5<cr>", desc = "Chat: Qwen3.5" },
-    {
-      "<leader>acn",
-      "<cmd>CodeCompanionChat adapter=llamacpp model=nemotron-nano-30b<cr>",
-      desc = "Chat: Llama Nvidia Nemo",
-    },
+    { "<leader>acq", "<cmd>CodeCompanionChat adapter=llamacpp model=qwen3.5<cr>", desc = "Chat: Qwen3.6" },
   },
 }
