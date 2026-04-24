@@ -15,5 +15,13 @@ return {
       -- for commenting tsx, jsx, svelte, html files
       pre_hook = ts_context_commentstring.create_pre_hook(),
     })
+
+    -- ensure cuda filetype is recognized for .cu and .cuh files
+    vim.api.nvim_create_autocmd("BufRead", {
+      pattern = { "*.cu", "*.cuh" },
+      callback = function()
+        vim.bo.filetype = "cuda"
+      end,
+    })
   end,
 }
