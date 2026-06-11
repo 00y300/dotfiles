@@ -36,7 +36,18 @@ keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
 -- Window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
-keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
+keymap.set("n", "<leader>se", function()
+    vim.cmd("wincmd =")
+    local wins = vim.api.nvim_tabpage_list_wins(0)
+    local target_width = vim.api.nvim_win_get_width(wins[1])
+    for _, win in ipairs(wins) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local ft = vim.api.nvim_buf_get_option(buf, 'filetype')
+      if ft == 'snacks_terminal' then
+        vim.api.nvim_win_set_width(win, target_width)
+      end
+    end
+  end, { desc = "Make splits equal size" })
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
 -- Tab management
