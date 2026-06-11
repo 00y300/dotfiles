@@ -27,9 +27,22 @@ return {
     },
   },
   config = function()
+    local opencode_cmd = 'opencode --port'
+    local snacks_terminal_opts = {
+      win = {
+        position = 'right',
+        enter = false,
+        wo = { winbar = '' },
+      },
+    }
+
     ---@type opencode.Opts
     vim.g.opencode_opts = {
-      -- Your configuration, if any; goto definition on the type or field for details
+      server = {
+        start = function()
+          require('snacks.terminal').open(opencode_cmd, snacks_terminal_opts)
+        end,
+      },
     }
     vim.o.autoread = true -- Required for `opts.events.reload`
 
@@ -41,15 +54,35 @@ return {
       require("opencode").select()
     end, { desc = "Execute opencode action…" })
 
-    -- Toggle: primary binding is <leader>oo (terminals always send this cleanly).
-    -- <C-.> is kept as a secondary binding for terminals that support the
-    -- Kitty keyboard protocol (kitty, wezterm, ghostty, foot, recent alacritty).
-    vim.keymap.set({ "n", "t" }, "<leader>oo", function()
-      require("opencode").toggle()
+    -- Toggle: user-land toggle via snacks.terminal (server.toggle removed in v0.11.0).
+    -- Uses <leader>c> to avoid collision with obsidian.nvim's <leader>o> menu
+    vim.keymap.set({ "n", "t" }, "<leader>c", function()
+      require('snacks.terminal').toggle(opencode_cmd, snacks_terminal_opts)
     end, { desc = "Toggle opencode" })
+    vim.keymap.set({ "n", "t" }, "<leader>ck", function()
+      local term = require('snacks.terminal').get(opencode_cmd, { create = false })
+      if term then
+        term:close()
+      end
+    end, { desc = "Kill opencode" })
     vim.keymap.set({ "n", "t" }, "<C-.>", function()
-      require("opencode").toggle()
+      require('snacks.terminal').toggle(opencode_cmd, snacks_terminal_opts)
     end, { desc = "Toggle opencode (Ctrl+.)" })
+
+    -- Optionally show on prompt submit
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'OpencodeEvent:tui.command.execute',
+      callback = function(args)
+        ---@type opencode.server.Event
+        local event = args.data.event
+        if event.properties.command == 'prompt.submit' then
+          local win = require('snacks.terminal').get(opencode_cmd, { create = false })
+          if win then
+            win:show()
+          end
+        end
+      end,
+    })
 
     vim.keymap.set({ "n", "x" }, "go", function()
       return require("opencode").operator("@this ")
