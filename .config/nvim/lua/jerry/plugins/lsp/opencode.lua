@@ -10,8 +10,15 @@ return {
         input = {},
         picker = {
           actions = {
-            opencode_send = function(...)
-              return require("opencode").snacks_picker_send(...)
+            ---@param picker snacks.Picker
+            opencode_send = function(picker)
+              local items = vim.tbl_map(function(item)
+                return item.file
+                    and require("opencode").format({ path = item.file, from = item.pos, to = item.end_pos })
+                  or item.text
+              end, picker:selected({ fallback = true }))
+
+              return require("opencode").prompt(table.concat(items, ", ") .. " ")
             end,
           },
           win = {
@@ -80,10 +87,10 @@ return {
       return require("opencode").operator("@this ") .. "_"
     end, { desc = "Add line to opencode", expr = true })
 
-    vim.keymap.set("n", "<S-C-u>", function()
+    vim.keymap.set("n", "<C-M-u>", function()
       require("opencode").command("session.half.page.up")
     end, { desc = "Scroll opencode up" })
-    vim.keymap.set("n", "<S-C-d>", function()
+    vim.keymap.set("n", "<C-M-d>", function()
       require("opencode").command("session.half.page.down")
     end, { desc = "Scroll opencode down" })
 
