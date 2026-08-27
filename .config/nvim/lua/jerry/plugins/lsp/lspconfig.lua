@@ -144,6 +144,22 @@ return {
     vim.lsp.enable("gopls", {
       capabilities = capabilities,
     })
+    -- C/C++ language server
+    vim.lsp.config("clangd", {
+      capabilities = capabilities,
+      root_markers = { ".clangd", ".git", "CMakeLists.txt" },
+      cmd = {
+        "clangd",
+        "--background-index",
+        "--clang-tidy",
+
+        "--compile-commands-dir=/nonexistent",
+        -- NO --query-driver: nvcc can't answer `nvcc -E -v -x cuda -` (fails on
+        -- stdin), which corrupts system-include extraction and degrades the parse.
+        -- All includes come from .clangd explicitly, so the driver query is unneeded.
+      },
+    })
+    vim.lsp.enable("clangd")
 
     -- C/C++ language server
     vim.lsp.enable("clangd", {

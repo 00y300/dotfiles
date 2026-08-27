@@ -45,6 +45,10 @@ return {
 
     vim.api.nvim_create_autocmd("FileType", {
       callback = function(event)
+        -- let vimtex own highlighting + indentation in LaTeX buffers
+        if vim.bo[event.buf].filetype == "tex" then
+          return
+        end
         local ok = pcall(vim.treesitter.start, event.buf)
         if ok then
           vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
