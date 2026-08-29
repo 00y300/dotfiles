@@ -233,5 +233,8 @@ return {
 
     -- TailwindCSS
     vim.lsp.enable("tailwindcss")
+
+    -- latex
+    vim.lsp.enable("texlab")
   end,
 }
