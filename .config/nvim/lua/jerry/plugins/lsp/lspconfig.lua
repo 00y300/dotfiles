@@ -180,7 +180,7 @@ return {
     vim.lsp.enable("harper_ls")
     vim.lsp.config("harper_ls", {
       capabilities = capabilities,
-      filetypes = { "markdown" },
+      filetypes = { "markdown", "text", "tex", "typst" },
       root_markers = {}, -- Remove .git root marker
       settings = {
         ["harper-ls"] = {

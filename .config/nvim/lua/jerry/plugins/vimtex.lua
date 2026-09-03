@@ -48,6 +48,33 @@ return {
   end,
 
   config = function()
+    local function format_sentences(first_line, last_line)
+      local lines = vim.api.nvim_buf_get_lines(0, first_line - 1, last_line, false)
+      local formatted = {}
+
+      for _, line in ipairs(lines) do
+        local rest = line
+        while true do
+          local before, punctuation, after = rest:match("^(.-)([.!?])%s+([%u\\].*)")
+          if not before then
+            table.insert(formatted, rest)
+            break
+          end
+          table.insert(formatted, before .. punctuation)
+          rest = after
+        end
+      end
+
+      vim.api.nvim_buf_set_lines(0, first_line - 1, last_line, false, formatted)
+    end
+
+    vim.api.nvim_create_user_command("TexSentenceFormat", function(args)
+      format_sentences(args.line1, args.line2)
+    end, {
+      range = true,
+      desc = "Put each LaTeX sentence on its own line",
+    })
+
     ---------------------------------------------------------------------------
     -- Follow the cursor: debounced forward search into the viewer
     ---------------------------------------------------------------------------
@@ -61,6 +88,15 @@ return {
     local pending = {}
 
     local group = vim.api.nvim_create_augroup("VimtexFollowCursor", { clear = true })
+
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      group = group,
+      pattern = "*.tex",
+      callback = function(event)
+        format_sentences(1, vim.api.nvim_buf_line_count(event.buf))
+      end,
+      desc = "Put each LaTeX sentence on its own line before saving",
+    })
 
     -- These are Vimscript dict members, so they have to be reached via eval()
     -- from inside the owning buffer's context.
@@ -212,5 +248,7 @@ return {
     { "<leader>lt", "<cmd>VimtexTocToggle<CR>", ft = "tex", desc = "LaTeX table of contents" },
     { "<leader>li", "<cmd>VimtexInfo<CR>", ft = "tex", desc = "LaTeX info" },
     { "<leader>lF", "<cmd>VimtexFollowToggle<CR>", ft = "tex", desc = "LaTeX toggle follow cursor" },
+    { "<leader>ls", "<cmd>%TexSentenceFormat<CR>", ft = "tex", desc = "LaTeX format sentences" },
+    { "<leader>ls", ":TexSentenceFormat<CR>", ft = "tex", mode = "x", desc = "LaTeX format sentences" },
   },
 }
